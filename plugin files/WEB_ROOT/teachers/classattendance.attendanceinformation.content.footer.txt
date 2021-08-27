@@ -42,10 +42,10 @@
 	//This function reads through the array created above and uses that information to add the buttons to the student rows
 	//Each button will link to an alert file which will open like other student alerts
     $j.each(attendanceNotifications, function(ccid, studentsdcid) {
-	  	$j('tr[id=ccid_' + ccid + '] td:eq(4)').append('&nbsp;<a href="/teachers/alerts/attendance_alert.html?frn=001'+ studentsdcid +'&att_date=~(gpv.att_date)" class="dialogM button" title="Attendance Information for Teachers">Attendance Info</a>');
+	  	$j('tr[id=ccid_' + ccid + '] td:eq(4)').append('&nbsp;<a href="/teachers/alerts/attendance_information.html?frn=001'+ studentsdcid +'&att_date=~(gpv.att_date)" class="dialogM button" title="Attendance Information for Teachers">Attendance Info</a>');
     });
     
   });
 </script>
 [/if#meeting1]
-<!-- End Teacher Attendance Notification -->
+<!-- End Teacher Attendance Info Notification -->
