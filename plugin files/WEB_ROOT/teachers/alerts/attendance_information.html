@@ -1,15 +1,19 @@
 <!-- Teacher Attendance Notification Alert Created by Chad Cole -->
-<div class="box-round" id="alert-attendance~(studentfrn)">
+<style type="text/css" title="text/css">
+	.tanwidth { max-width: 640px; }
+</style>
+
+<div class="box-round tanwidth" id="alert-attendance~(studentfrn)">
 	<p class="alertHeader">Attendance Information for ~(studentname)</p>
-	<p>There are other attendance records recorded for this student for today, ~(gpv.att_date)</p>
+	<p>There are attendance records recorded for this student for today, ~(gpv.att_date)</p>
 	<p><b>Meeting Attendance:</b></p>
 	<table class="linkDescList">
 			<thead>
 					<tr>
 							<th>Period</th>
 							<th>Course</th>
-							<th>Code</th>
-							<th>Status</th>
+							<th style="text-align: center;">Code</th>
+							<th style="text-align: center;">Status</th>
 							<th>Comment</th>
 					</tr>
 			</thead>
@@ -25,8 +29,8 @@
 					<tr>
 							<td>~(se.external_expression)</td>
 							<td>~(c.course_name)</td>
-							<td>~(pam.att_code)</td>
-							<td>~(pam.presence_status_cd)</td>
+							<td style="text-align: center;">~(pam.att_code)</td>
+							<td style="text-align: center;">~(pam.presence_status_cd)</td>
 							<td>~(pam.att_comment)</td>
 					</tr>
 					[/tlist_sql]
@@ -55,4 +59,8 @@
 					[/tlist_sql]
 			</tbody>
 	</table>
+	<div id="legend">
+        <h3>~[text:psx.common.legend]</h3>
+        <p><strong>~[text:psx.html.admin_attendance_view.meeting.attendance_codes]</strong> ~[x:att_code_legend;studentschool]</p>
+	</div>
 </div>
