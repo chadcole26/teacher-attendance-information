@@ -23,12 +23,18 @@
         			    (
         				    select count(*)
         				    from pssis_attendance_meeting pam 
-        				    where s.id = pam.studentid and pam.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+        				    where s.id = pam.studentid 
+        				        and pam.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+        				        --  REMOVE OR COMMENT OUT THE FOLLOWING LIKE TO INCLUDE ALL RECORDED ATTENDANCE CODES
+        				        and pam.presence_status_cd = 'Absent'
         			    ) as meetingcount,
         			    (
         				    select count(*)
         				    from pssis_attendance_daily pad
-        				    where s.id = pad.studentid and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+        				    where s.id = pad.studentid 
+        				        and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+        				        --  REMOVE OR COMMENT OUT THE FOLLOWING LIKE TO INCLUDE ALL RECORDED ATTENDANCE CODES
+        				        and pad.presence_status_cd = 'Absent'
         			    ) as dailycount
         			    from students s
         			    inner join cc cc on s.id = cc.studentid and cc.sectionid = ~(gpv.sectionid;sqlText)
@@ -42,7 +48,7 @@
 	//This function reads through the array created above and uses that information to add the buttons to the student rows
 	//Each button will link to an alert file which will open like other student alerts
     $j.each(attendanceNotifications, function(ccid, studentsdcid) {
-	  	$j('tr[id=ccid_' + ccid + '] td:eq(4)').append('&nbsp;<a href="/teachers/alerts/attendance_information.html?frn=001'+ studentsdcid +'&att_date=~(gpv.att_date)" class="dialogM button" title="Attendance Information for Teachers">Attendance Info</a>');
+	  	$j('tr[id=ccid_' + ccid + '] td:eq(2)').append('&nbsp;<a href="/teachers/alerts/attendance_information.html?frn=001'+ studentsdcid +'&att_date=~(gpv.att_date)" class="dialogM" title="Attendance Information for Teachers"><img src="/images/attendance-red-30x30.svg" alt="Show Attendance Info" width="25" height="25"></a>');
     });
     
   });
