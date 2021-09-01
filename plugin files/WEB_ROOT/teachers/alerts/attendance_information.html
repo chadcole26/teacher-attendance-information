@@ -11,29 +11,44 @@
 			<thead>
 					<tr>
 							<th>Period</th>
+							<th>Attendance</th>
 							<th>Course</th>
-							<th style="text-align: center;">Code</th>
-							<th style="text-align: center;">Status</th>
-							<th>Comment</th>
 					</tr>
 			</thead>
 			<tbody>
 					~[tlist_sql;
-							select se.external_expression, c.course_name, pam.att_code, pam.presence_status_cd, pam.att_comment
-							from pssis_attendance_meeting pam
-							inner join sections se on pam.sectionid = se.id
-							inner join courses c on se.course_number = c.course_number
-							where pam.studentid =  ~(curstudid)
-								and pam.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-								-- REMOVE OR COMMENT OUT THE FOLLOWING 'AND' STATEMENT IF YOU WANT ABSENT MEETING ATTENDANCE CODES THAT HAVE BEEN CHANGED OR UPDATED TO THE DEFAULT PRESENT CODE TO DISPLAY IN THE DIALOG FOR TEACHERS
-								and pam.att_code is not null
-							order by se.expression;nonemessage=<tr><td colspan="100%">There are no meeting attendance codes recorded for today.</td></tr>]
+						select
+							case when att.id is null then 'attendancetaken_no.png' else 'attendancetaken_yes.png' end as att_taken,
+							s.external_expression,
+							case when pam.att_code is null then null else ac.description || ' - (' || pam.att_code || ')' end as att_code,
+							c.course_name
+						from  ps_class_meeting pcm
+						inner join  ps_calendar_day pcd
+							on pcd.schoolid = pcm.schoolid
+							and pcd.date_value = pcm.date_value
+							and pcd.bell_schedule_id = pcm.bell_schedule_id
+						inner join sections s
+							on pcm.sectionid = s.id
+						inner join courses c
+							on pcm.course_number = c.course_number
+						left join attendance_taken att
+							on pcm.sectionid = att.sectionid
+							and pcm.date_value = att.att_date
+						left join pssis_attendance_meeting pam
+							on pcm.studentid = pam.studentid
+							and pcm.sectionid = pam.sectionid
+							and pcm.date_value = pam.att_date
+						left join attendance_code ac
+							on pam.attendance_codeid = ac.id
+						where pcm.schoolid = ~(curschoolid)
+							and pcm.date_value = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+							and pcm.dropped = 0
+							and pcm.studentid = ~(curstudid)
+						order by pcm.periodid;nonemessage=<tr><td colspan="100%">There are no meeting attendance codes recorded for today.</td></tr>]
 					<tr>
-							<td>~(se.external_expression)</td>
+							<td><img src="/images/~(att_taken)" height="15" width="15" style="vertical-align:middle;"> - ~(se.external_expression)</td>
+							<td>~(ad.att_code)</td>
 							<td>~(c.course_name)</td>
-							<td style="text-align: center;">~(pam.att_code)</td>
-							<td style="text-align: center;">~(pam.presence_status_cd)</td>
-							<td>~(pam.att_comment)</td>
 					</tr>
 					[/tlist_sql]
 			</tbody>
@@ -52,6 +67,8 @@
 							select pad.att_code, pad.presence_status_cd, pad.att_comment
 							from pssis_attendance_daily pad
 							where pad.studentid =  ~(curstudid)
+							-- REMOVE OR COMMENT OUT THE FOLLOWING 'AND' STATEMENT IF YOU WANT ABSENT DAILY ATTENDANCE CODES THAT HAVE BEEN CHANGED OR UPDATED TO THE DEFAULT PRESENT CODE TO DISPLAY IN THE DIALOG FOR TEACHERS
+								and pad.att_code is not null
 								and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]');nonemessage=<tr><td colspan="100%">There is no daily attendance code recorded for today.</td></tr>]
 					<tr>
 							<td>~(pad.att_code)</td>
@@ -66,99 +83,3 @@
         <p><strong>~[text:psx.html.admin_attendance_view.meeting.attendance_codes]</strong> ~[x:att_code_legend;studentschool]</p>
 	</div>
 </div>
-
-<!--Meeting Attendance Full Schedule
-    This pulls the students entire schedule instead of only pulling sections for
-    which attendance had been entered. This could allow teachers to see gaps where other
-    teachers either didn't take attendace, assuming the student was absent in multiple
-    classes for the day, or identify a student who is potential skipping intermittent
-    classes throughout the day. It does not pull absent codes that have been changed to
-    the default present code, whether by the teacher or the office. Instructions to show
-    those records are included in the sql.
-
-	<table class="linkDescList">
-			<thead>
-					<tr>
-							<th>Period</th>
-							<th>Course</th>
-							<th style="text-align: center;">Code</th>
-							<th style="text-align: center;">Comment</th>
-							<th>Entered By</th>
-					</tr>
-			</thead>
-			<tbody>
-					~[tlist_sql;
-						select s.external_expression, c.course_name, ad.attcode, ad.attcomment, ad.adminorteacher 
-						from cc cc
-						inner join sections s
-							on cc.sectionid = s.id
-						inner join courses c
-							on cc.course_number = c.course_number
-						left join (
-							select 
-								a.ccid as ccid,
-								ac.att_code||' ('||ac.description||')' as attcode,
-								a.att_comment as attcomment, 
-								case when a.lock_teacher_YN = 1 then 'Admin' else 'Teacher' end as adminorteacher
-							from attendance a
-							inner join attendance_code ac
-								on a.attendance_codeid = ac.id
-							where a.studentid = ~(curstudid)
-								and a.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-								-- REMOVE OR COMMENT OUT THE FOLLOWING 'AND' STATEMENT IF YOU WANT ABSENT MEETING ATTENDANCE CODES THAT HAVE BEEN CHANGED OR UPDATED TO THE DEFAULT PRESENT CODE TO DISPLAY IN THE DIALOG FOR TEACHERS
-								and ac.att_code is not null
-						) ad on ad.ccid = cc.id
-						where cc.studentid = ~(curstudid)
-							and to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]') between cc.dateenrolled and cc.dateleft-1
-						order by s.external_expression;nonemessage=<tr><td colspan="100%">There are no meeting attendance codes recorded for today.</td></tr>]
-					<tr>
-							<td>~(se.external_expression)</td>
-							<td>~(c.course_name)</td>
-							<td style="text-align: center;">~(pam.att_code)</td>
-							<td style="text-align: center;">~(pam.presence_status_cd)</td>
-							<td>~(pam.att_comment)</td>
-					</tr>
-					[/tlist_sql]
-			</tbody>
-	</table>
-
--->
-
-<!--Meeting Attendance Original
-    This pulls only sections for which attendance had been entered. It does not pull absent
-    codes that have been changed to the default present code, whether by the teacher or
-    the office. Instructions to show those records are included in the sql.
-    
-	<table class="linkDescList">
-			<thead>
-					<tr>
-							<th>Period</th>
-							<th>Course</th>
-							<th style="text-align: center;">Code</th>
-							<th style="text-align: center;">Status</th>
-							<th>Comment</th>
-					</tr>
-			</thead>
-			<tbody>
-					~[tlist_sql;
-							select se.external_expression, c.course_name, pam.att_code, pam.presence_status_cd, pam.att_comment
-							from pssis_attendance_meeting pam
-							inner join sections se on pam.sectionid = se.id
-							inner join courses c on se.course_number = c.course_number
-							where pam.studentid =  ~(curstudid)
-								and pam.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-								-- REMOVE OR COMMENT OUT THE FOLLOWING 'AND' STATEMENT IF YOU WANT ABSENT MEETING ATTENDANCE CODES THAT HAVE BEEN CHANGED OR UPDATED TO THE DEFAULT PRESENT CODE TO DISPLAY IN THE DIALOG FOR TEACHERS
-								and pam.att_code is not null
-							order by se.expression;nonemessage=<tr><td colspan="100%">There are no meeting attendance codes recorded for today.</td></tr>]
-					<tr>
-							<td>~(se.external_expression)</td>
-							<td>~(c.course_name)</td>
-							<td style="text-align: center;">~(pam.att_code)</td>
-							<td style="text-align: center;">~(pam.presence_status_cd)</td>
-							<td>~(pam.att_comment)</td>
-					</tr>
-					[/tlist_sql]
-			</tbody>
-	</table>
-
--->
