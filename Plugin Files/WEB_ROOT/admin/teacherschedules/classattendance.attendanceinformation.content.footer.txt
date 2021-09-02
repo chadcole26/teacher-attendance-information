@@ -50,7 +50,7 @@
 	//This function reads through the array created above and uses that information to add the buttons to the student rows
 	//Each button will link to an alert file which will open like other student alerts
     $j.each(attendanceNotifications, function(ccid, studentsdcid) {
-	  	$j('tr[id=ccid_' + ccid + '] td:eq(3)').append('&nbsp;<a href="/teachers/alerts/attendance_information.html?frn=001'+ studentsdcid +'&att_date=~(gpv.att_date)" class="dialogM dockedDialog" title="Attendance Information for Teachers"><img src="/images/attendance-red-30x30.svg" alt="Show Attendance Info" width="25" height="25" style="vertical-align: bottom;"></a>');
+	  	$j('tr[id=ccid_' + ccid + '] td:eq(3)').append('&nbsp;<a href="/admin/alerts/attendance_information.html?frn=001'+ studentsdcid +'&att_date=~(gpv.att_date)" class="dialogM dockedDialog" title="Attendance Information for Teachers"><img src="/images/attendance-red-30x30.svg" alt="Show Attendance Info" width="25" height="25" style="vertical-align: bottom;"></a>');
     });
     
     $j('#legend').after('<div><p style="color:#666666;font-size:x-small;">This page displays student attendance information using a Teachers Attendance Notification customization.</p></div>');
