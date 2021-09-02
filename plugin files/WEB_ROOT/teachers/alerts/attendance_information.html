@@ -57,22 +57,24 @@
 	<table class="linkDescList">
 			<thead>
 					<tr>
-							<th>Code</th>
-							<th>Status</th>
+							<th>Attendance</th>
 							<th>Comment</th>
 					</tr>
 			</thead>
 			<tbody>
 					~[tlist_sql;
-							select pad.att_code, pad.presence_status_cd, pad.att_comment
+							select
+							  case when pad.att_code is null then null else ac.description || ' - (' || pad.att_code || ')' end as att_code,
+							  pad.att_comment
 							from pssis_attendance_daily pad
+							inner join attendance_code ac
+								on pad.attendance_codeid = ac.id
 							where pad.studentid =  ~(curstudid)
 							-- REMOVE OR COMMENT OUT THE FOLLOWING 'AND' STATEMENT IF YOU WANT ABSENT DAILY ATTENDANCE CODES THAT HAVE BEEN CHANGED OR UPDATED TO THE DEFAULT PRESENT CODE TO DISPLAY IN THE DIALOG FOR TEACHERS
 								and pad.att_code is not null
 								and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]');nonemessage=<tr><td colspan="100%">There is no daily attendance code recorded for today.</td></tr>]
 					<tr>
-							<td>~(pad.att_code)</td>
-							<td>~(pad.presence_status_cd)</td>
+							<td>~(att_code)</td>
 							<td>~(pad.att_comment)</td>
 					</tr>
 					[/tlist_sql]
