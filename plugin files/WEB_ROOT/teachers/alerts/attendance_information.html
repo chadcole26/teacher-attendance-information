@@ -12,6 +12,7 @@
 							<th>Period</th>
 							<th>Attendance</th>
 							<th>Course</th>
+							<th>Lead Teacher</th>
 					</tr>
 			</thead>
 			<tbody>
@@ -20,16 +21,20 @@
 							case when att.id is null then 'attendancetaken_no.png' else 'attendancetaken_yes.png' end as att_taken,
 							s.external_expression,
 							case when pam.att_code is null then null else ac.description || ' - (' || pam.att_code || ')' end as att_code,
-							c.course_name
+							c.course_name,
+            	-- REMOVE OR COMMENT THE FOLLOWING OUT IF YOU DO NOT WANT TO DISPLAY SCHOOL ABBREVIATIONS, YOU WILL NEED TO REMEMBER TO UPDATE THE HTML CODE, TOO
+            	sc.abbreviation,
+            	t.lastfirst
 						from  ps_class_meeting pcm
-						inner join  ps_calendar_day pcd
-							on pcd.schoolid = pcm.schoolid
-							and pcd.date_value = pcm.date_value
-							and pcd.bell_schedule_id = pcm.bell_schedule_id
 						inner join sections s
 							on pcm.sectionid = s.id
+            -- REMOVE OR COMMENT THE FOLLOWING JOIN OUT IF YOU DO NOT WANT TO DISPLAY REMOTE ENROLLMENT INFORMATION
+            inner join schools sc
+            	on s.schoolid = sc.school_number
 						inner join courses c
 							on pcm.course_number = c.course_number
+            inner join teachers t
+            	on t.id = s.teacher
 						left join attendance_taken att
 							on pcm.sectionid = att.sectionid
 							and pcm.date_value = att.att_date
@@ -39,15 +44,18 @@
 							and pcm.date_value = pam.att_date
 						left join attendance_code ac
 							on pam.attendance_codeid = ac.id
-						where pcm.schoolid = ~(curschoolid)
-							and pcm.date_value = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+						where pcm.date_value = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
 							and pcm.dropped = 0
+              and pcm.take_attendance = 1
+              -- UNCOMMENT THE FOLLOWING IF YOU WANT TO LIMIT THE SCHEDULE DISPLAY TO THE CURRENT SCHOOL ID, EXCLUDES REMOTE ENROLLMENTS
+              --and pcm.schoolid = ~(curschoolid)
 							and pcm.studentid = ~(curstudid)
 						order by pcm.periodid;nonemessage=<tr><td colspan="100%">There are no meeting attendance codes recorded for today.</td></tr>]
 					<tr>
 							<td><img src="/images/~(att_taken)" height="15" width="15" style="vertical-align:middle;"> - ~(se.external_expression)</td>
 							<td>~(ad.att_code)</td>
-							<td>~(c.course_name)</td>
+							<td>~(c.course_name) - (~(sc.abbreviation))</td>
+							<td>~(t.lastfirst)</td>
 					</tr>
 					[/tlist_sql]
 			</tbody>
