@@ -47,15 +47,15 @@
 	
     //Function step 2
     attendanceNotifications.forEach(dcid => {
-    angularCustomizations.addCustomization('pss-integrations-attendance', {
-      injectionType: 'append',
-      querySelector: `#alerts-${dcid} div.student-alerts`,
-      template: `<a href="/teachers/alerts/attendance_information.html?frn=001${dcid}&att_date=~[date]" class="dialogM"  title="Attendance Information for Teachers"><img src="/images/attendance-red-30x30.svg" alt="Show Attendance Info" width="25" height="25" style="vertical-align: text-bottom;"></a>`
+        angularCustomizations.addCustomization('pss-integrations-attendance', {
+            injectionType: 'append',
+            querySelector: `#alerts-${dcid} div.student-alerts`,
+            template: `<a href="/integrations/attendance/alerts/attendance_information.html?frn=001${dcid}&att_date=~[date]" class="dialogM"  title="Attendance Information for Teachers"><img src="/images/attendance-red-30x30.svg" alt="Show Attendance Info" width="25" height="25" style="vertical-align: text-bottom;"></a>`
 	    });
-    angularCustomizations.addCustomization('pss-integrations-attendance', {
-      iconURL:`/images/attendance-red-30x30.svg`,
-      templateURL: `/teachers/alerts/attendance_information.html?frn=001${dcid}&att_date=~[date]`,
-      type: 'popover'
+        angularCustomizations.addCustomization('pss-integrations-attendance', {
+            iconURL:`/images/attendance-red-30x30.svg`,
+            templateURL: `/integrations/attendance/alerts/attendance_information.html?frn=001${dcid}&att_date=~[date]`,
+            type: 'popover'
 	    });
   	});
     
