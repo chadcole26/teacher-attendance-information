@@ -4,95 +4,9 @@
 </style>
 
 <div class="box-round tanwidth" id="alert-attendance~(studentfrn)">
-	<p class="alertHeader">Attendance Information for ~(first_name) ~(last_name) -  ~(gpv.att_date)</p>
-	<p><b>Meeting Attendance:</b></p>
-	<table class="linkDescList">
-			<thead>
-					<tr>
-							<th>Period</th>
-							<th>Attendance</th>
-							<th>Course</th>
-							<th>Lead Teacher</th>
-					</tr>
-			</thead>
-			<tbody>
-					~[tlist_sql;
-						select
-							case when att.id is null then 'attendancetaken_no.png' else 'attendancetaken_yes.png' end as att_taken,
-							s.external_expression,
-							case when pam.att_code is null then null else ac.description || ' - (' || pam.att_code || ')' end as att_code,
-							c.course_name,
-							-- REMOVE OR COMMENT THE FOLLOWING OUT IF YOU DO NOT WANT TO DISPLAY SCHOOL ABBREVIATIONS, YOU WILL NEED TO REMEMBER TO UPDATE THE HTML CODE, TOO
-							sc.abbreviation,
-							t.lastfirst
-						from  ps_class_meeting pcm
-						inner join  ps_calendar_day pcd
-							on pcd.schoolid = pcm.schoolid
-							and pcd.date_value = pcm.date_value
-							and pcd.bell_schedule_id = pcm.bell_schedule_id
-						inner join sections s
-							on pcm.sectionid = s.id
-						-- REMOVE OR COMMENT THE FOLLOWING JOIN OUT IF YOU DO NOT WANT TO DISPLAY REMOTE ENROLLMENT INFORMATION
-						inner join schools sc
-							on s.schoolid = sc.school_number
-						inner join courses c
-							on pcm.course_number = c.course_number
-						inner join teachers t
-							on t.id = s.teacher
-						left join attendance_taken att
-							on pcm.sectionid = att.sectionid
-							and pcm.date_value = att.att_date
-						left join pssis_attendance_meeting pam
-							on pcm.studentid = pam.studentid
-							and pcm.sectionid = pam.sectionid
-							and pcm.date_value = pam.att_date
-						left join attendance_code ac
-							on pam.attendance_codeid = ac.id
-						where pcm.date_value = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-							and pcm.dropped = 0
-							and pcm.take_attendance = 1
-							and pcm.studentid = ~(curstudid)
-							-- THE FOLLOWING LINE EXCLUDES COURSES AND SECTIONS THAT ARE SET TO BE EXCLUDED FROM ADA, REMOVE OR COMMENT OUT IF YOU WANT TO SHOW ALL CLASSES
-							and ((s.exclude_ada = 0 and c.exclude_ada = 0) or (s.exclude_ada = 0 and c.exclude_ada = 1))
-							-- UNCOMMENT THE FOLLOWING IF YOU WANT TO LIMIT THE SCHEDULE DISPLAY TO THE CURRENT SCHOOL ID, EXCLUDES REMOTE ENROLLMENTS
-							--and pcm.schoolid = ~(curschoolid)
-						order by pcm.periodid;nonemessage=<tr><td colspan="100%">There are no meeting attendance codes recorded for today.</td></tr>]
-					<tr>
-							<td><img src="/images/~(att_taken)" height="15" width="15" style="vertical-align:middle;"> - ~(se.external_expression)</td>
-							<td>~(ad.att_code)</td>
-							<td>~(c.course_name) - (~(sc.abbreviation))</td>
-							<td>~(t.lastfirst)</td>
-					</tr>
-					[/tlist_sql]
-			</tbody>
-	</table>
-	<p><b>Daily Attendance:</b></p>
-	<table class="linkDescList">
-			<thead>
-					<tr>
-							<th>Attendance</th>
-							<th>Comment</th>
-					</tr>
-			</thead>
-			<tbody>
-					~[tlist_sql;
-							select
-							  case when pad.att_code is null then null else ac.description || ' - (' || pad.att_code || ')' end as att_code,
-							  pad.att_comment
-							from pssis_attendance_daily pad
-							inner join attendance_code ac
-								on pad.attendance_codeid = ac.id
-							where pad.studentid =  ~(curstudid)
-							-- REMOVE OR COMMENT OUT THE FOLLOWING 'AND' STATEMENT IF YOU WANT ABSENT DAILY ATTENDANCE CODES THAT HAVE BEEN CHANGED OR UPDATED TO THE DEFAULT PRESENT CODE TO DISPLAY IN THE DIALOG FOR TEACHERS
-								and pad.att_code is not null
-								and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]');nonemessage=<tr><td colspan="100%">There is no daily attendance code recorded for today.</td></tr>]
-					<tr>
-							<td>~(att_code)</td>
-							<td>~(pad.att_comment)</td>
-					</tr>
-					[/tlist_sql]
-			</tbody>
-	</table>
+
+	~[wc:attendance_information]
+	
 	<div id="legend">
         <h3>~[text:psx.common.legend]</h3>
         <table>
