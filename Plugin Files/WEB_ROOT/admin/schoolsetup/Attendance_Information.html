@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <title>Attendance Info For Teachers</title>
+<!-- required scripts -->
+ ~[wc:commonscripts] 
+<!-- Required style sheets: screen.css, and print.css --> 
+ <link href="/images/css/screen.css" rel="stylesheet" media="screen">
+ <link href="/images/css/print.css" rel="stylesheet" media="print">
+
+	<script type="text/javascript">
+	
+		$j(document).ready(function(){
+			schoolEnabled();
+		});
+	
+		function schoolEnabled () {
+			if($j('#aift_enabledSchool').prop('checked') == false ) {
+				$j('.hideShow').show();
+			} else {
+				$j('.hideShow').hide();
+			}
+		}
+		
+	</script>
+	
+</head> 
+<body> 
+ ~[wc:admin_header_css] 
+ <!-- breadcrumb start --><a href="/admin/home.html" target="_top">~[text:psx.html.admin_schoolsetup.balancealertedit.start_page]</a> &gt; <a href="/admin/schoolsetup/home.html" target="_top">~[text:psx.html.admin_schoolsetup.balancealertedit.school_setup]</a> &gt; Attendance Info for Teachers<!-- breadcrumb end --> 
+<!-- start of main menu and content --> 
+ ~[wc:admin_navigation_css] 
+<!-- Start of Page --> 
+ <h1>Attendance Info For Teachers</h1> 
+<!-- start of content area -->
+~[if.gpv.action=success]
+<div class="feedback-confirm">Successfully recorded changes.</div>
+[/if]
+
+		<form action="/admin/schoolsetup/Attendance_Information.html?action=success" method="POST">
+			<div class="box-round"> 
+				<h2>Attendance Information for Teachers - School Managed Settings</h2>
+				<table class="linkDescList" id="aift_schoolOptions">
+					<thead>
+						<tr>
+							<th style="width:80%;">School Use and Display Options</th>
+							<th style="width:20%;">Enabled</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Disable Attendance Info for Teachers for ~(schoolname)</td>
+							<td><input type="checkbox" value="1" name="[prefschool]aift_enabledSchool" id="aift_enabledSchool"  onchange="schoolEnabled()" /></td>
+						</tr>
+						<tr class="hideShow">
+							<td>Do not show school abbreviations on student schedule</td>
+							<td><input type="checkbox" value="1" name="[prefschool]aift_schoolAbbreviations" id="aift_schoolAbbreviations" /></td>
+						</tr>
+						<tr class="hideShow">
+							<td>Do not show remote enrollments</td>
+							<td><input type="checkbox" value="1" name="[prefschool]aift_remoteEnrollments" id="aift_remoteEnrollments" /></td>
+						</tr>
+						<tr class="hideShow">
+							<td>Include courses/sections that have been set to be excluded from ADA calculations</td>
+							<td><input type="checkbox" value="1" name="[prefschool]aift_adaExclude" id="aift_adaExclude" /></td>
+						</tr>
+						<tr class="hideShow">
+							<td>Show the red chair for all attendance codes, not just absences</td>
+							<td><input type="checkbox" value="1" name="[prefschool]aift_allAttendance" id="aift_allAttendance" /></td>
+						</tr>
+						<tr class="hideShow">
+							<td>Show the red chair if the only attendance submitted is for the viewing teachers period/section</td>
+							<td><input type="checkbox" value="1" name="[prefschool]aift_showCurrent" id="aift_showCurrent" /></td>
+						</tr>
+					</tbody>
+				</table>
+
+				<div class="button-row">
+					<input type="hidden" name="ac" value="prim">~[submitbutton]
+				</div>
+
+			</div>
+		</form>
+		
+<!-- end of content area --> 
+ ~[wc:admin_footer_css] 
+</body> 
+</html>

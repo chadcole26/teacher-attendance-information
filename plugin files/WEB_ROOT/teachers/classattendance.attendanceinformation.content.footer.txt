@@ -1,65 +1,73 @@
-<!-- Teacher Attendance Info Notification Created by Chad Cole -->
-<!-- This script adds an attendance information button, on the teacher's meeting attendance screen, for any student who has any attendance codes entered for the day -->
+~[if#aift_enabledSchool.prefschool.aift_enabledSchool=]
+	<!-- Teacher Attendance Info Notification Created by Chad Cole -->
+	<!-- This script adds an attendance information button, on the teacher's meeting attendance screen, for any student who has any attendance codes entered for the day -->
 
-<!-- Test to see if the user clicked into the single meeting mode (chair) to take attendance -->
-~[if#meeting1.~[gpv:pagetype]=meeting]
+	<!-- Test to see if the user clicked into the single meeting mode (chair) to take attendance -->
+	~[if#meetingaift.~[gpv:pagetype]=meeting]
 
-<!-- If the user clicked into the chair, this script will run and add the attendance information button at the end of the appropriate student rows -->
-<script language="javascript">
-  //The variable created in this function will be an array containing the student and course info needed to add the button to the correct rows on the attendance screen
-  //The query pulls a list of all students in the class who have meeting or daily attendance records for the current day
-  $j(document).ready(function(){
-    //Function step 1
-    var attendanceNotifications = {
-        ~[tlist_sql;
-        	select
-        	    attdata.ccid,
-        	    attdata.studentsdcid
-        	from 
-        	    (
-        	        select 
-        		        cc.id as ccid,
-        		        s.dcid as studentsdcid,
-        			    	(
-        				    	select count(*)
-        				    	from pssis_attendance_meeting pam 
-        				    	where s.id = pam.studentid 
-        				      	and pam.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-        				        --  REMOVE OR COMMENT OUT THE FOLLOWING LINE TO INCLUDE ALL RECORDED ATTENDANCE CODES
-        				        and pam.presence_status_cd = 'Absent'
-        				        -- 	REMOVE OR COMMENT OUT THE FOLLOWING LINE TO ALLOW CURRENT SECTION ATTENDANCE TO COUNT AND SET PROMPT THE NOTIFICAITON
-        				        and pam.sectionid != ~(gpv.sectionid;sqlText)
-        			    	) as meetingcount,
-        			    	(
-        				    	select count(*)
-        				    	from pssis_attendance_daily pad
-        				    	where s.id = pad.studentid 
-        				      	and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-        				        --  REMOVE OR COMMENT OUT THE FOLLOWING LIKE TO INCLUDE ALL RECORDED ATTENDANCE CODES
-        				        and pad.presence_status_cd = 'Absent'
-        			    	) as dailycount
-        			    from students s
-        			    inner join cc cc on s.id = cc.studentid and cc.sectionid = ~(gpv.sectionid;sqlText)
-        		) attdata
-        	where (attdata.meetingcount > 0 or attdata.dailycount > 0);]
-        	"~(attdata.ccid)":"~(attdata.studentsdcid)",
-        [/tlist_sql]"":""
-	  };
+	<!-- If the user clicked into the chair, this script will run and add the attendance information button at the end of the appropriate student rows -->
+	<script language="javascript">
+		//The variable created in this function will be an array containing the student and course info needed to add the button to the correct rows on the attendance screen
+		//The query pulls a list of all students in the class who have meeting or daily attendance records for the current day
+		$j(document).ready(function(){
+			//Function step 1
+			var attendanceNotifications = {
+					~[tlist_sql;
+						select
+								attdata.ccid,
+								attdata.studentsdcid
+						from 
+								(
+										select 
+											cc.id as ccid,
+											s.dcid as studentsdcid,
+										(
+											select count(*)
+											from pssis_attendance_meeting pam 
+											where s.id = pam.studentid 
+													and pam.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+													and pam.att_code is not null -- This filters out any attendance codes that have been changed to the default present code
+													~[if#aift_allAttendanceM.prefschool.aift_allAttendance=]
+														and pam.presence_status_cd = 'Absent'
+													[/if#aift_allAttendanceM]
+													-- 	REMOVE OR COMMENT OUT THE FOLLOWING LINE TO ALLOW CURRENT SECTION ATTENDANCE TO COUNT AND SET PROMPT THE NOTIFICAITON
+													~[if#aift_showCurrent.prefschool.aift_showCurrent=]
+														and pam.sectionid != ~(gpv.sectionid;sqlText)
+													[/if#aift_showCurrent]
+										) as meetingcount,
+										(
+											select count(*)
+											from pssis_attendance_daily pad
+											where s.id = pad.studentid 
+													and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+													and pad.att_code is not null -- This filters out any attendance codes that have been changed to the default present code
+													~[if#aift_allAttendanceD.prefschool.aift_allAttendance=]
+														and pad.presence_status_cd = 'Absent'
+													[/if#aift_allAttendanceD]
+										) as dailycount
+										from students s
+										inner join cc cc on s.id = cc.studentid and cc.sectionid = ~(gpv.sectionid;sqlText)
+							) attdata
+						where (attdata.meetingcount > 0 or attdata.dailycount > 0);]
+						"~(attdata.ccid)":"~(attdata.studentsdcid)",
+					[/tlist_sql]"":""
+			};
 	
-    //Function step 2
-	//This function reads through the array created above and uses that information to add the buttons to the student rows
-	//Each button will link to an alert file which will open like other student alerts
-    $j.each(attendanceNotifications, function(ccid, studentsdcid) {
-	  	$j('tr[id=ccid_' + ccid + '] td:eq(3)').append('&nbsp;<a href="/teachers/alerts/attendance_information.html?frn=001'+ studentsdcid +'&att_date=~(gpv.att_date)" class="dialogM dockedDialog" title="Attendance Information for Teachers"><img src="/images/attendance-red-30x30.svg" alt="Show Attendance Info" width="25" height="25" style="vertical-align: bottom;"></a>');
-    });
-    
-    $j('#legend').after('<div><p style="color:#666666;font-size:x-small;">This page displays student attendance information using the <i>Attendance Information for Teachers</i> plugin customization.</p></div>');
-    
-  });
-</script>
+			//Function step 2
+		//This function reads through the array created above and uses that information to add the buttons to the student rows
+		//Each button will link to an alert file which will open like other student alerts
+			$j.each(attendanceNotifications, function(ccid, studentsdcid) {
+				$j('tr[id=ccid_' + ccid + '] td:eq(3)').append('&nbsp;<a href="/teachers/alerts/attendance_information.html?frn=001'+ studentsdcid +'&att_date=~(gpv.att_date)" class="dialogM dockedDialog" title="Attendance Information for Teachers"><img src="/images/attendance-red-30x30.svg" alt="Show Attendance Info" width="25" height="25" style="vertical-align: bottom;"></a>');
+			});
+		
+			$j('#legend').after('<div><p style="color:#666666;font-size:x-small;">This page displays student attendance information using the <i>Attendance Information for Teachers</i> plugin customization.</p></div>');
+		
+		});
+	</script>
 
-[/if#meeting1]
-<!-- End Teacher Attendance Info Notification -->
+	[/if#meetingaift]
+	<!-- End Teacher Attendance Info Notification -->
+[/if#aift_enabledSchool]
 
 <table border="0" cellpadding="2" cellspacing="0" width="100%" id="att_info" class="linkDescList">
 	<tr>

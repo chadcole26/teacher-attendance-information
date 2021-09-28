@@ -1,4 +1,11 @@
-	<p class="alertHeader">Attendance Information for ~(first_name) ~(last_name) -  ~(gpv.att_date)</p>
+<!-- Teacher Attendance Notification Alert Created by Chad Cole -->
+<style type="text/css" title="text/css">
+	.tanwidth { max-width: 640px; }
+</style>
+
+<div class="box-round tanwidth" id="alert-attendance~(studentfrn)">
+	<p class="alertHeader">Attendance Information for ~(studentname)</p>
+	<p>There are attendance records recorded for this student for today, ~(gpv.att_date)</p>
 	<p><b>Meeting Attendance:</b></p>
 	<table class="linkDescList">
 			<thead>
@@ -6,7 +13,6 @@
 							<th>Period</th>
 							<th>Attendance</th>
 							<th>Course</th>
-							<th>Lead Teacher</th>
 					</tr>
 			</thead>
 			<tbody>
@@ -15,10 +21,7 @@
 							case when att.id is null then 'attendancetaken_no.png' else 'attendancetaken_yes.png' end as att_taken,
 							s.external_expression,
 							case when pam.att_code is null then null else ac.description || ' - (' || pam.att_code || ')' end as att_code,
-							c.course_name,
-							-- REMOVE OR COMMENT THE FOLLOWING OUT IF YOU DO NOT WANT TO DISPLAY SCHOOL ABBREVIATIONS, YOU WILL NEED TO REMEMBER TO UPDATE THE HTML CODE, TOO
-							sc.abbreviation,
-							t.lastfirst
+							c.course_name
 						from  ps_class_meeting pcm
 						inner join  ps_calendar_day pcd
 							on pcd.schoolid = pcm.schoolid
@@ -26,12 +29,8 @@
 							and pcd.bell_schedule_id = pcm.bell_schedule_id
 						inner join sections s
 							on pcm.sectionid = s.id
-						inner join schools sc
-							on s.schoolid = sc.school_number
 						inner join courses c
 							on pcm.course_number = c.course_number
-						inner join teachers t
-							on t.id = s.teacher
 						left join attendance_taken att
 							on pcm.sectionid = att.sectionid
 							and pcm.date_value = att.att_date
@@ -41,20 +40,15 @@
 							and pcm.date_value = pam.att_date
 						left join attendance_code ac
 							on pam.attendance_codeid = ac.id
-						where pcm.date_value = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+						where pcm.schoolid = ~(curschoolid)
+							and pcm.date_value = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
 							and pcm.dropped = 0
-							and pcm.take_attendance = 1
 							and pcm.studentid = ~(curstudid)
-							-- THE FOLLOWING LINE EXCLUDES COURSES AND SECTIONS THAT ARE SET TO BE EXCLUDED FROM ADA, REMOVE OR COMMENT OUT IF YOU WANT TO SHOW ALL CLASSES
-							and ((s.exclude_ada = 0 and c.exclude_ada = 0) or (s.exclude_ada = 0 and c.exclude_ada = 1))
-							-- UNCOMMENT THE FOLLOWING IF YOU WANT TO LIMIT THE SCHEDULE DISPLAY TO THE CURRENT SCHOOL ID, EXCLUDES REMOTE ENROLLMENTS
-							--and pcm.schoolid = ~(curschoolid)
 						order by pcm.periodid;nonemessage=<tr><td colspan="100%">There are no meeting attendance codes recorded for today.</td></tr>]
 					<tr>
 							<td><img src="/images/~(att_taken)" height="15" width="15" style="vertical-align:middle;"> - ~(se.external_expression)</td>
 							<td>~(ad.att_code)</td>
-							<td>~(c.course_name) - (~(sc.abbreviation))</td>
-							<td>~(t.lastfirst)</td>
+							<td>~(c.course_name)</td>
 					</tr>
 					[/tlist_sql]
 			</tbody>
@@ -76,10 +70,9 @@
 							inner join attendance_code ac
 								on pad.attendance_codeid = ac.id
 							where pad.studentid =  ~(curstudid)
-								and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-							  -- REMOVE OR COMMENT OUT THE FOLLOWING 'AND' STATEMENT IF YOU WANT ABSENT DAILY ATTENDANCE CODES THAT HAVE BEEN CHANGED OR UPDATED TO THE DEFAULT PRESENT CODE TO DISPLAY IN THE DIALOG FOR TEACHERS
+							-- REMOVE OR COMMENT OUT THE FOLLOWING 'AND' STATEMENT IF YOU WANT ABSENT DAILY ATTENDANCE CODES THAT HAVE BEEN CHANGED OR UPDATED TO THE DEFAULT PRESENT CODE TO DISPLAY IN THE DIALOG FOR TEACHERS
 								and pad.att_code is not null
-								;nonemessage=<tr><td colspan="100%">There is no daily attendance code recorded for today.</td></tr>]
+								and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]');nonemessage=<tr><td colspan="100%">There is no daily attendance code recorded for today.</td></tr>]
 					<tr>
 							<td>~(att_code)</td>
 							<td>~(pad.att_comment)</td>
@@ -87,3 +80,17 @@
 					[/tlist_sql]
 			</tbody>
 	</table>
+	<div id="legend">
+        <h3>~[text:psx.common.legend]</h3>
+        <table>
+        	<tr>
+        		<td><img src="/images/attendancetaken_yes.png" height="15" width="15" style="vertical-align:middle;"></td>
+        		<td><p>Indicates attendance has been submitted by the teacher, sub, or using the teacher schedule page in the admin portal.</p></td>
+        	</tr>
+        	<tr>
+        		<td><img src="/images/attendancetaken_no.png" height="15" width="15" style="vertical-align:middle;"></td>
+        		<td><p>Indicates attendance has not been submitted by the teacher, sub, or using the teacher schedule page in the admin portal. A student may still show an attendance code if attendance was entered in the office on the attendance dashboard or the attendance pages in the student's profile.</p></td>
+        	</tr>
+        </table>
+	</div>
+</div>

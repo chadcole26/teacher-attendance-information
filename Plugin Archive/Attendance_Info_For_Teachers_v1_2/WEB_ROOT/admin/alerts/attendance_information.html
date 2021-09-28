@@ -1,3 +1,9 @@
+<!-- Teacher Attendance Notification Alert Created by Chad Cole -->
+<style type="text/css" title="text/css">
+	.tanwidth { max-width: 640px; }
+</style>
+
+<div class="box-round tanwidth" id="alert-attendance~(studentfrn)">
 	<p class="alertHeader">Attendance Information for ~(first_name) ~(last_name) -  ~(gpv.att_date)</p>
 	<p><b>Meeting Attendance:</b></p>
 	<table class="linkDescList">
@@ -26,6 +32,7 @@
 							and pcd.bell_schedule_id = pcm.bell_schedule_id
 						inner join sections s
 							on pcm.sectionid = s.id
+						-- REMOVE OR COMMENT THE FOLLOWING JOIN OUT IF YOU DO NOT WANT TO DISPLAY REMOTE ENROLLMENT INFORMATION
 						inner join schools sc
 							on s.schoolid = sc.school_number
 						inner join courses c
@@ -44,11 +51,9 @@
 						where pcm.date_value = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
 							and pcm.dropped = 0
 							and pcm.take_attendance = 1
-							and pcm.studentid = ~(curstudid)
-							-- THE FOLLOWING LINE EXCLUDES COURSES AND SECTIONS THAT ARE SET TO BE EXCLUDED FROM ADA, REMOVE OR COMMENT OUT IF YOU WANT TO SHOW ALL CLASSES
-							and ((s.exclude_ada = 0 and c.exclude_ada = 0) or (s.exclude_ada = 0 and c.exclude_ada = 1))
 							-- UNCOMMENT THE FOLLOWING IF YOU WANT TO LIMIT THE SCHEDULE DISPLAY TO THE CURRENT SCHOOL ID, EXCLUDES REMOTE ENROLLMENTS
 							--and pcm.schoolid = ~(curschoolid)
+							and pcm.studentid = ~(curstudid)
 						order by pcm.periodid;nonemessage=<tr><td colspan="100%">There are no meeting attendance codes recorded for today.</td></tr>]
 					<tr>
 							<td><img src="/images/~(att_taken)" height="15" width="15" style="vertical-align:middle;"> - ~(se.external_expression)</td>
@@ -76,10 +81,9 @@
 							inner join attendance_code ac
 								on pad.attendance_codeid = ac.id
 							where pad.studentid =  ~(curstudid)
-								and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-							  -- REMOVE OR COMMENT OUT THE FOLLOWING 'AND' STATEMENT IF YOU WANT ABSENT DAILY ATTENDANCE CODES THAT HAVE BEEN CHANGED OR UPDATED TO THE DEFAULT PRESENT CODE TO DISPLAY IN THE DIALOG FOR TEACHERS
+							-- REMOVE OR COMMENT OUT THE FOLLOWING 'AND' STATEMENT IF YOU WANT ABSENT DAILY ATTENDANCE CODES THAT HAVE BEEN CHANGED OR UPDATED TO THE DEFAULT PRESENT CODE TO DISPLAY IN THE DIALOG FOR TEACHERS
 								and pad.att_code is not null
-								;nonemessage=<tr><td colspan="100%">There is no daily attendance code recorded for today.</td></tr>]
+								and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]');nonemessage=<tr><td colspan="100%">There is no daily attendance code recorded for today.</td></tr>]
 					<tr>
 							<td>~(att_code)</td>
 							<td>~(pad.att_comment)</td>
@@ -87,3 +91,20 @@
 					[/tlist_sql]
 			</tbody>
 	</table>
+	<div id="legend">
+        <h3>~[text:psx.common.legend]</h3>
+        <table>
+        	<tr>
+        		<td><img src="/images/attendancetaken_yes.png" height="15" width="15" style="vertical-align:middle;"></td>
+        		<td><p>Indicates attendance has been submitted by the teacher, sub, or using the teacher schedule page in the admin portal.</p></td>
+        	</tr>
+        	<tr>
+        		<td><img src="/images/attendancetaken_no.png" height="15" width="15" style="vertical-align:middle;"></td>
+        		<td><p>Indicates attendance has not been submitted by the teacher, sub, or using the teacher schedule page in the admin portal. A student may still show an attendance code if attendance was entered in the office on the attendance dashboard or the attendance pages in the student's profile.</p></td>
+        	</tr>
+        </table>
+	</div>
+	<div>
+		<p style="color:#666666;font-size:x-small;">This page displays student attendance information using the <i>Attendance Information for Teachers</i> plugin customization.</p>
+	</div>
+</div>
