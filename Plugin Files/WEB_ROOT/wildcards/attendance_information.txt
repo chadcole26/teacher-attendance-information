@@ -16,8 +16,9 @@
 							s.external_expression,
 							case when pam.att_code is null then null else ac.description || ' - (' || pam.att_code || ')' end as att_code,
 							c.course_name,
-							-- REMOVE OR COMMENT THE FOLLOWING OUT IF YOU DO NOT WANT TO DISPLAY SCHOOL ABBREVIATIONS, YOU WILL NEED TO REMEMBER TO UPDATE THE HTML CODE, TOO
-							sc.abbreviation,
+							~[if#aift_schoolAbbreviations1.prefschool.aift_schoolAbbreviations=]
+							 sc.abbreviation,
+							[/if#aift_schoolAbbreviations1]
 							t.lastfirst
 						from  ps_class_meeting pcm
 						inner join  ps_calendar_day pcd
@@ -45,15 +46,17 @@
 							and pcm.dropped = 0
 							and pcm.take_attendance = 1
 							and pcm.studentid = ~(curstudid)
-							-- THE FOLLOWING LINE EXCLUDES COURSES AND SECTIONS THAT ARE SET TO BE EXCLUDED FROM ADA, REMOVE OR COMMENT OUT IF YOU WANT TO SHOW ALL CLASSES
-							and ((s.exclude_ada = 0 and c.exclude_ada = 0) or (s.exclude_ada = 0 and c.exclude_ada = 1))
-							-- UNCOMMENT THE FOLLOWING IF YOU WANT TO LIMIT THE SCHEDULE DISPLAY TO THE CURRENT SCHOOL ID, EXCLUDES REMOTE ENROLLMENTS
-							--and pcm.schoolid = ~(curschoolid)
+							~[if#aift_adaExclude.prefschool.aift_adaExclude=]
+								and ((s.exclude_ada = 0 and c.exclude_ada = 0) or (s.exclude_ada = 0 and c.exclude_ada = 1))
+							[/if#aift_adaExclude]
+							~[if#aift_remoteEnrollments.prefschool.aift_remoteEnrollments=1]
+								and pcm.schoolid = ~(curschoolid)
+							[/if#aift_remoteEnrollments]
 						order by pcm.periodid;nonemessage=<tr><td colspan="100%">There are no meeting attendance codes recorded for today.</td></tr>]
 					<tr>
 							<td><img src="/images/~(att_taken)" height="15" width="15" style="vertical-align:middle;"> - ~(se.external_expression)</td>
 							<td>~(ad.att_code)</td>
-							<td>~(c.course_name) - (~(sc.abbreviation))</td>
+							<td>~(c.course_name) ~[if#aift_schoolAbbreviations2.prefschool.aift_schoolAbbreviations=]- (~(sc.abbreviation))[/if#aift_schoolAbbreviations2]</td>
 							<td>~(t.lastfirst)</td>
 					</tr>
 					[/tlist_sql]
@@ -77,8 +80,7 @@
 								on pad.attendance_codeid = ac.id
 							where pad.studentid =  ~(curstudid)
 								and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-							  -- REMOVE OR COMMENT OUT THE FOLLOWING 'AND' STATEMENT IF YOU WANT ABSENT DAILY ATTENDANCE CODES THAT HAVE BEEN CHANGED OR UPDATED TO THE DEFAULT PRESENT CODE TO DISPLAY IN THE DIALOG FOR TEACHERS
-								and pad.att_code is not null
+								and pad.att_code is not null -- This filters out any attendance codes that have been changed to the default present code
 								;nonemessage=<tr><td colspan="100%">There is no daily attendance code recorded for today.</td></tr>]
 					<tr>
 							<td>~(att_code)</td>
