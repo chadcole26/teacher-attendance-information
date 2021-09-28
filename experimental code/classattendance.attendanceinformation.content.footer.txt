@@ -128,3 +128,46 @@
 
 [/if#meeting1]
 <!-- End Teacher Attendance Info Notification -->
+
+
+<!-- BLASGFASHDFASHDGHASDGJS
+
+<table border="0" cellpadding="2" cellspacing="0" width="100%" id="att_info" class="linkDescList">
+	<tr>
+		<td>~[ATT_RecordMeetingTeacherStudentList]
+			~[tlist_sql;
+				select
+					cc.id,
+					s.dcid
+				from students s
+				inner join cc cc
+					on s.id = cc.studentid
+				where cc.id = '[ccid]'
+					and 
+						(
+							(
+								select count(*)
+								from pssis_attendance_meeting pam 
+								where s.id = pam.studentid 
+									and pam.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+									--  REMOVE OR COMMENT OUT THE FOLLOWING LINE TO INCLUDE ALL RECORDED ATTENDANCE CODES
+									and pam.presence_status_cd = 'Absent'
+									-- 	REMOVE OR COMMENT OUT THE FOLLOWING LINE TO ALLOW CURRENT SECTION ATTENDANCE TO COUNT AND SET PROMPT THE NOTIFICAITON
+									and pam.sectionid != cc.sectionid 
+							) > 0 or (
+								select count(*)
+								from pssis_attendance_daily pad
+								where s.id = pad.studentid 
+									and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+									--  REMOVE OR COMMENT OUT THE FOLLOWING LIKE TO INCLUDE ALL RECORDED ATTENDANCE CODES
+									and pad.presence_status_cd = 'Absent'
+							) > 0
+						)
+			]
+				<span ccid="ccid_~(cc.id)" class="attinfo" dcid="~(s.dcid)" hasatt="1"></span>
+			[/tlist_sql] 
+		</td>
+	</tr>
+</table>
+
+-->
