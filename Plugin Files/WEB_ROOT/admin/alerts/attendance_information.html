@@ -51,9 +51,11 @@
 						where pcm.date_value = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
 							and pcm.dropped = 0
 							and pcm.take_attendance = 1
+							and pcm.studentid = ~(curstudid)
+							-- THE FOLLOWING LINE EXCLUDES COURSES AND SECTIONS THAT ARE SET TO BE EXCLUDED FROM ADA, REMOVE OR COMMENT OUT IF YOU WANT TO SHOW ALL CLASSES
+							and ((s.exclude_ada = 0 and c.exclude_ada = 0) or (s.exclude_ada = 0 and c.exclude_ada = 1))
 							-- UNCOMMENT THE FOLLOWING IF YOU WANT TO LIMIT THE SCHEDULE DISPLAY TO THE CURRENT SCHOOL ID, EXCLUDES REMOTE ENROLLMENTS
 							--and pcm.schoolid = ~(curschoolid)
-							and pcm.studentid = ~(curstudid)
 						order by pcm.periodid;nonemessage=<tr><td colspan="100%">There are no meeting attendance codes recorded for today.</td></tr>]
 					<tr>
 							<td><img src="/images/~(att_taken)" height="15" width="15" style="vertical-align:middle;"> - ~(se.external_expression)</td>

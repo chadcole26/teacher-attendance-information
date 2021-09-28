@@ -1,4 +1,4 @@
-<!-- Teacher Attendance Info Notification Created by Chad Cole - v1.0 8/27/2021 -->
+<!-- Teacher Attendance Info Notification Created by Chad Cole -->
 <!-- This script adds an attendance information button, on the teacher's meeting attendance screen, for any student who has any attendance codes entered for the day -->
 
 <!-- Test to see if the user clicked into the single meeting mode (chair) to take attendance -->
