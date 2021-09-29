@@ -41,37 +41,33 @@
 			<div class="box-round"> 
 				<h2>Attendance Information for Teachers - School Managed Settings</h2>
 				<table class="linkDescList" id="aift_schoolOptions">
-					<thead>
-						<tr>
-							<th style="width:80%;">School Use and Display Options</th>
-							<th style="width:20%;">Enabled</th>
-						</tr>
-					</thead>
 					<tbody>
 						<tr>
-							<td>Disable Attendance Info for Teachers for ~(schoolname)</td>
 							<td><input type="checkbox" value="1" name="[prefschool]aift_enabledSchool" id="aift_enabledSchool"  onchange="schoolEnabled()" /></td>
+							<td>Disable <em>Attendance Info for Teachers</em> for ~(schoolname)&nbsp;&nbsp; <a href="#aift_enabledSchoolMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15"></a></td>
 						</tr>
 						<tr class="hideShow">
-							<td>Do not show school abbreviations on student schedule</td>
 							<td><input type="checkbox" value="1" name="[prefschool]aift_schoolAbbreviations" id="aift_schoolAbbreviations" /></td>
+							<td>Only show school abbreviations if the class does not meet at the current school&nbsp;&nbsp; <a href="#aift_schoolAbbreviationsMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15"></td>
 						</tr>
 						<tr class="hideShow">
-							<td>Show only classes scheduled at ~(schoolname) in the student's schedule</td>
 							<td><input type="checkbox" value="1" name="[prefschool]aift_remoteEnrollments" id="aift_remoteEnrollments" /></td>
+							<td>Show only classes scheduled at ~(schoolname) in the student's schedule&nbsp;&nbsp; <a href="#aift_remoteEnrollmentsMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15"></td>
 						</tr>
 						<tr class="hideShow">
-							<td>Include courses/sections that have been set to be excluded from ADA calculations</td>
 							<td><input type="checkbox" value="1" name="[prefschool]aift_adaExclude" id="aift_adaExclude" /></td>
+							<td>Include courses/sections that have been set to be excluded from ADA calculations&nbsp;&nbsp; <a href="#aift_adaExcludeMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15"></td>
 						</tr>
 						<tr class="hideShow">
-							<td>Show the red chair for all attendance codes, not just absences</td>
 							<td><input type="checkbox" value="1" name="[prefschool]aift_allAttendance" id="aift_allAttendance" /></td>
+							<td>Show the red chair for all attendance codes, not just absences&nbsp;&nbsp; <a href="#aift_allAttendanceMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15"></td>
 						</tr>
+						<!--
 						<tr class="hideShow">
-							<td>Show the red chair if the only attendance submitted is for the viewing teachers period/section</td>
 							<td><input type="checkbox" value="1" name="[prefschool]aift_showCurrent" id="aift_showCurrent" /></td>
+							<td>Show the red chair if the only attendance submitted is for the viewing teachers period/section  <a href="#aift_showCurrentMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15"></td>
 						</tr>
+						-->
 					</tbody>
 				</table>
 
@@ -84,5 +80,87 @@
 		
 <!-- end of content area --> 
  ~[wc:admin_footer_css] 
+ 
+
+<!-- Information about disabling the features -->
+<div id="aift_enabledSchoolMI" class="hide" style="">
+    <div style="max-width:640px;">
+    	<h2>Attendance Information for Teachers - School Managed Settings</h2>
+    	<table class="linkDescList">
+    		<tr>
+    			<td class="bold">Setting:</td>
+    			<td>Disable <em>Attendance Info for Teachers</em> for ~(schoolname)</td>
+    		</tr>
+    		<tr>
+    			<td colspan="2">Default setting is for the features of the <em>Attendance Information for Teachers</em> plugin to be enabled for all schools. Checking this box will  turn the features off for only ~(schoolname).</td>
+    		</tr>
+    	</table>
+    </div>
+</div>
+
+<!-- Information about school abbreviations -->
+<div id="aift_schoolAbbreviationsMI" class="hide" style="">
+    <div style="max-width:640px;">
+    	<h2>Attendance Information for Teachers - School Managed Settings</h2>
+    	<table class="linkDescList">
+    		<tr>
+    			<td class="bold">Setting:</td>
+    			<td>Only show school abbreviations if the class does not meet at the current school</td>
+    		</tr>
+    		<tr>
+    			<td colspan="2">Default setting shows the abbreviation of the school where each class in the student's schedule is taught. Checking this box will remove the abbreviation for classes taught at the teacher's current school and the abbreviation will appear only for classes taught at other schools. </td>
+    		</tr>
+    	</table>
+    </div>
+</div>
+
+<!-- Information about remote enrollments --> 
+<div id="aift_remoteEnrollmentsMI" class="hide" style="">
+    <div style="max-width:640px;">
+    	<h2>Attendance Information for Teachers - School Managed Settings</h2>
+    	<table class="linkDescList">
+    		<tr>
+    			<td class="bold">Setting:</td>
+    			<td>Show only classes scheduled at ~(schoolname) in the student's schedule</td>
+    		</tr>
+    		<tr>
+    			<td colspan="2">Default setting shows the student's entire schedule, including classes taken at other schools (dual/remote enrollments) on the same PowerSchool server. Checking this box will remove those classes from the student's schedule listing.</td>
+    		</tr>
+    	</table>
+    </div>
+</div>
+
+<!-- Information about classes excluded from ADA calculations -->  
+<div id="aift_adaExcludeMI" class="hide" style="">
+    <div style="max-width:640px;">
+    	<h2>Attendance Information for Teachers - School Managed Settings</h2>
+    	<table class="linkDescList">
+    		<tr>
+    			<td class="bold">Setting:</td>
+    			<td>Include courses/sections that have been set to be excluded from ADA calculations </td>
+    		</tr>
+    		<tr>
+    			<td colspan="2">Default setting shows only classes that count toward ADA (average daily attendance) calculations. Checking this box will show all current course enrollments for the student, regardless of whether attendance taken for the class counts towards ADA calculations.</td>
+    		</tr>
+    	</table>
+    </div>
+</div>
+
+<!-- Informaiton about including all attendance records -->  
+<div id="aift_allAttendanceMI" class="hide" style="">
+    <div style="max-width:640px;">
+    	<h2>Attendance Information for Teachers - School Managed Settings</h2>
+    	<table class="linkDescList">
+    		<tr>
+    			<td class="bold">Setting:</td>
+    			<td>Show the red chair for all attendance codes, not just absences</td>
+    		</tr>
+    		<tr>
+    			<td colspan="2">Default setting will display the red chair when the student has at least one attendance record, meeting or daily, with a presence status of <em>Absent</em>. The chair will not display when all attendance codes on record for the day and for the student have a presence status of <em>Present</em> (e.g. tardies, excused codes such as field trips or athletics, or any code indicating the student may or may not have been in class but was still counted as present.) Checking this box will display the red chair when the student has any attendance records, regardless of presence status, that are not the default <em>Present</em> code.</td>
+    		</tr>
+    	</table>
+    </div>
+</div>
+ 
 </body> 
 </html>

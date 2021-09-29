@@ -3,10 +3,9 @@
 	<!-- This script adds an attendance information button, on the teacher's meeting attendance screen, for any student who has any attendance codes entered for the day -->
 
 	<!-- Test to see if the user clicked into the single meeting mode (chair) to take attendance -->
-	~[if#meeting1.~[gpv:pagetype]=meeting]
+	~[if#meetingaift.~[gpv:pagetype]=meeting]
 
 	<!-- If the user clicked into the chair, this script will run and add the attendance information button at the end of the appropriate student rows -->
-
 	<script language="javascript">
 		//The variable created in this function will be an array containing the student and course info needed to add the button to the correct rows on the attendance screen
 		//The query pulls a list of all students in the class who have meeting or daily attendance records for the current day
@@ -31,9 +30,9 @@
 													~[if#aift_allAttendanceM.prefschool.aift_allAttendance=]
 														and pam.presence_status_cd = 'Absent'
 													[/if#aift_allAttendanceM]
-													~[if#aift_showCurrent.prefschool.aift_showCurrent=]
-														and pam.sectionid != ~(gpv.sectionid;sqlText)
-													[/if#aift_showCurrent]
+													--~[if#aift_showCurrent.prefschool.aift_showCurrent=]
+														--and pam.sectionid != ~(gpv.sectionid;sqlText)
+													--[/if#aift_showCurrent]
 										) as meetingcount,
 										(
 											select count(*)
@@ -78,6 +77,6 @@
 		});
 	</script>
 
-	[/if#meeting1]
+	[/if#meetingaift]
 	<!-- End Teacher Attendance Info Notification -->
 [/if#aift_enabledSchool]
