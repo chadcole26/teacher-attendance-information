@@ -43,32 +43,41 @@
 				<table class="linkDescList" id="aift_schoolOptions">
 					<tbody>
 						<tr>
-							<td><input type="checkbox" value="1" name="[prefschool]aift_enabledSchool" id="aift_enabledSchool"  onchange="schoolEnabled()" /></td>
-							<td>Disable <em>Attendance Info for Teachers</em> for ~(schoolname)&nbsp;&nbsp; <a href="#aift_enabledSchoolMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15"></a></td>
-						</tr>
-						<tr class="hideShow">
-							<td><input type="checkbox" value="1" name="[prefschool]aift_schoolAbbreviations" id="aift_schoolAbbreviations" /></td>
-							<td>Only show school abbreviations if the class does not meet at the current school&nbsp;&nbsp; <a href="#aift_schoolAbbreviationsMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15"></td>
-						</tr>
-						<tr class="hideShow">
-							<td><input type="checkbox" value="1" name="[prefschool]aift_remoteEnrollments" id="aift_remoteEnrollments" /></td>
-							<td>Show only classes scheduled at ~(schoolname) in the student's schedule&nbsp;&nbsp; <a href="#aift_remoteEnrollmentsMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15"></td>
-						</tr>
-						<tr class="hideShow">
-							<td><input type="checkbox" value="1" name="[prefschool]aift_adaExclude" id="aift_adaExclude" /></td>
-							<td>Include courses/sections that have been set to be excluded from ADA calculations&nbsp;&nbsp; <a href="#aift_adaExcludeMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15"></td>
-						</tr>
-						<tr class="hideShow">
-							<td><input type="checkbox" value="1" name="[prefschool]aift_allAttendance" id="aift_allAttendance" /></td>
-							<td>Show the red chair for all attendance codes, not just absences&nbsp;&nbsp; <a href="#aift_allAttendanceMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15"></td>
+							<td>
+							    <input type="checkbox" value="1" name="[prefschool]aift_enabledSchool" id="aift_enabledSchool"  onchange="schoolEnabled()" />&nbsp;
+							    Disable <em>Attendance Info for Teachers</em> for ~(schoolname)&nbsp;&nbsp; <a href="#aift_enabledSchoolMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15"></a>
+						    </td>
 						</tr>
 						<tr class="hideShow">
 							<td>
-							    <input type="radio" value="1" name="[prefschool]aift_AttType" />Daily Attendance Only<br>
-							    <input type="radio" value="0" name="[prefschool]aift_AttType" />Meeting Attendance Only<br>
-							    <input type="radio" value="" name="[prefschool]aift_AttType" />Daily or Meeting Attendance
+							    <input type="checkbox" value="1" name="[prefschool]aift_schoolAbbreviations" id="aift_schoolAbbreviations" />&nbsp;
+							    Only show school abbreviations if the class does not meet at the current school&nbsp;&nbsp; <a href="#aift_schoolAbbreviationsMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15">
+						    </td>
+						</tr>
+						<tr class="hideShow">
+							<td>
+							    <input type="checkbox" value="1" name="[prefschool]aift_remoteEnrollments" id="aift_remoteEnrollments" />&nbsp;
+						        Show only classes scheduled at ~(schoolname) in the student's schedule&nbsp;&nbsp; <a href="#aift_remoteEnrollmentsMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15">
+						    </td>
+						</tr>
+						<tr class="hideShow">
+							<td>
+							    <input type="checkbox" value="1" name="[prefschool]aift_adaExclude" id="aift_adaExclude" />&nbsp;
+							    Include courses/sections that have been set to be excluded from ADA calculations&nbsp;&nbsp; <a href="#aift_adaExcludeMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15">
 							</td>
-							<td>Show the red chair for...&nbsp;&nbsp; <a href="#aift_AttTypeMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15"></td>
+						</tr>
+						<tr class="hideShow">
+							<td><input type="checkbox" value="1" name="[prefschool]aift_allAttendance" id="aift_allAttendance" />&nbsp;
+							    Show the red chair for all attendance codes, not just absences&nbsp;&nbsp; <a href="#aift_allAttendanceMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15">
+						    </td>
+						</tr>
+						<tr class="hideShow">
+							<td>
+							    Show the red chair for...&nbsp;&nbsp; <a href="#aift_AttTypeMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15"></a><br>
+							    &nbsp;&nbsp;&nbsp;<input type="radio" value="1" name="[prefschool]aift_AttType" />Daily Attendance Only<br>
+							    &nbsp;&nbsp;&nbsp;<input type="radio" value="0" name="[prefschool]aift_AttType" />Meeting Attendance Only<br>
+							    &nbsp;&nbsp;&nbsp;<input type="radio" value="" name="[prefschool]aift_AttType" />Daily or Meeting Attendance
+							</td>
 						</tr>
 						<!--
 						<tr class="hideShow">
