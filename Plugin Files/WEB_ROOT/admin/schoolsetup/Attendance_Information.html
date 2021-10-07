@@ -62,6 +62,14 @@
 							<td><input type="checkbox" value="1" name="[prefschool]aift_allAttendance" id="aift_allAttendance" /></td>
 							<td>Show the red chair for all attendance codes, not just absences&nbsp;&nbsp; <a href="#aift_allAttendanceMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15"></td>
 						</tr>
+						<tr class="hideShow">
+							<td>
+							    <input type="radio" value="1" name="[prefschool]aift_AttType" />Daily Attendance Only<br>
+							    <input type="radio" value="0" name="[prefschool]aift_AttType" />Meeting Attendance Only<br>
+							    <input type="radio" value="" name="[prefschool]aift_AttType" />Daily or Meeting Attendance
+							</td>
+							<td>Show the red chair for...&nbsp;&nbsp; <a href="#aift_AttTypeMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15"></td>
+						</tr>
 						<!--
 						<tr class="hideShow">
 							<td><input type="checkbox" value="1" name="[prefschool]aift_showCurrent" id="aift_showCurrent" /></td>
@@ -157,6 +165,22 @@
     		</tr>
     		<tr>
     			<td colspan="2">Default setting will display the red chair when the student has at least one attendance record, meeting or daily, with a presence status of <em>Absent</em>. The chair will not display when all attendance codes on record for the day and for the student have a presence status of <em>Present</em> (e.g. tardies, excused codes such as field trips or athletics, or any code indicating the student may or may not have been in class but was still counted as present.) Checking this box will display the red chair when the student has any attendance records, regardless of presence status, that are not the default <em>Present</em> code.</td>
+    		</tr>
+    	</table>
+    </div>
+</div>
+
+<!-- Informaiton about selecting specific Att type -->  
+<div id="aift_AttTypeMI" class="hide" style="">
+    <div style="max-width:640px;">
+    	<h2>Attendance Information for Teachers - School Managed Settings</h2>
+    	<table class="linkDescList">
+    		<tr>
+    			<td class="bold">Setting:</td>
+    			<td>Show the red chair for...</td>
+    		</tr>
+    		<tr>
+    			<td colspan="2">Default setting, <em>Daily or Meeting Attendance</em>, will display the red chair when the student has at least one attendance record, meeting or daily, with a presence status of <em>Absent</em>. Selecting <em>Daily Attendance Only</em> will only show the chair if there is a daily attendance code for the student and meeting attendance will be ignored. Selecting <em>Meeting Attendance Only</em> will only show the chair if there is a meeting attendance code for the student and daily attendance will be ignored.</td>
     		</tr>
     	</table>
     </div>

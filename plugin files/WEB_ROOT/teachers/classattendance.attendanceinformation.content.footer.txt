@@ -18,36 +18,74 @@
 								attdata.studentsdcid
 						from 
 								(
-										select 
+										select
+										    ~[if#aift_AttTypeA.prefschool.aift_AttType=]
+    									    (
+    											select count(*)
+    											from pssis_attendance_meeting pam 
+    											where s.id = pam.studentid 
+    													and pam.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+    													and pam.att_code is not null -- This filters out any attendance codes that have been changed to the default present code
+    													~[if#aift_allAttendanceM.prefschool.aift_allAttendance=]
+    														and pam.presence_status_cd = 'Absent'
+    													[/if#aift_allAttendanceM]
+    													--~[if#aift_showCurrent.prefschool.aift_showCurrent=]
+    														--and pam.sectionid != ~(gpv.sectionid;sqlText)
+    													--[/if#aift_showCurrent]
+    										) as meetingcount,
+    										(
+    											select count(*)
+    											from pssis_attendance_daily pad
+    											where s.id = pad.studentid 
+    													and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+    													and pad.att_code is not null -- This filters out any attendance codes that have been changed to the default present code
+    													~[if#aift_allAttendanceD.prefschool.aift_allAttendance=]
+    														and pad.presence_status_cd = 'Absent'
+    													[/if#aift_allAttendanceD]
+    										) as dailycount,
+    										[else#aift_AttTypeA]
+    										    ~[if#aift_AttType1.prefschool.aift_AttType=1]
+            										(
+            											select count(*)
+            											from pssis_attendance_daily pad
+            											where s.id = pad.studentid 
+            													and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+            													and pad.att_code is not null -- This filters out any attendance codes that have been changed to the default present code
+            													~[if#aift_allAttendanceD.prefschool.aift_allAttendance=]
+            														and pad.presence_status_cd = 'Absent'
+            													[/if#aift_allAttendanceD]
+            										) as dailycount,
+    										    [/if#aift_AttType1]
+    										    ~[if#aift_AttType0.prefschool.aift_AttType=0]
+            										(
+            											select count(*)
+            											from pssis_attendance_meeting pam 
+            											where s.id = pam.studentid 
+            													and pam.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+            													and pam.att_code is not null -- This filters out any attendance codes that have been changed to the default present code
+            													~[if#aift_allAttendanceM.prefschool.aift_allAttendance=]
+            														and pam.presence_status_cd = 'Absent'
+            													[/if#aift_allAttendanceM]
+            													--~[if#aift_showCurrent.prefschool.aift_showCurrent=]
+            														--and pam.sectionid != ~(gpv.sectionid;sqlText)
+            													--[/if#aift_showCurrent]
+            										) as meetingcount,
+    										    [/if#aift_AttType0]
+    										[/if#aift_AttTypeA]
 											cc.id as ccid,
-											s.dcid as studentsdcid,
-										(
-											select count(*)
-											from pssis_attendance_meeting pam 
-											where s.id = pam.studentid 
-													and pam.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-													and pam.att_code is not null -- This filters out any attendance codes that have been changed to the default present code
-													~[if#aift_allAttendanceM.prefschool.aift_allAttendance=]
-														and pam.presence_status_cd = 'Absent'
-													[/if#aift_allAttendanceM]
-													--~[if#aift_showCurrent.prefschool.aift_showCurrent=]
-														--and pam.sectionid != ~(gpv.sectionid;sqlText)
-													--[/if#aift_showCurrent]
-										) as meetingcount,
-										(
-											select count(*)
-											from pssis_attendance_daily pad
-											where s.id = pad.studentid 
-													and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-													and pad.att_code is not null -- This filters out any attendance codes that have been changed to the default present code
-													~[if#aift_allAttendanceD.prefschool.aift_allAttendance=]
-														and pad.presence_status_cd = 'Absent'
-													[/if#aift_allAttendanceD]
-										) as dailycount
+											s.dcid as studentsdcid
 										from students s
 										inner join cc cc on s.id = cc.studentid and cc.sectionid = ~(gpv.sectionid;sqlText)
 							) attdata
-						where (attdata.meetingcount > 0 or attdata.dailycount > 0);]
+						~[if#aift_AttTypeBoth.prefschool.aift_AttType=]
+						    where (attdata.meetingcount > 0 or attdata.dailycount > 0);]
+						[/if#aift_AttTypeBoth]
+						~[if#aift_AttTypeDaily.prefschool.aift_AttType=1]
+						    where attdata.dailycount > 0;]
+						[/if#aift_AttTypeDaily]
+						~[if#aift_AttTypeMeeting.prefschool.aift_AttType=0]
+						    where attdata.meetingcount > 0;]
+						[/if#aift_AttTypeMeeting]
 						"~(attdata.ccid)":"~(attdata.studentsdcid)",
 					[/tlist_sql]"":""
 			};
