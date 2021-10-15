@@ -119,23 +119,29 @@
 			<thead>
 					<tr>
 							<th>Attendance</th>
+							<th>Time-In/Out</th>
 							<th>Comment</th>
 					</tr>
 			</thead>
 			<tbody>
 					~[tlist_sql;
-							select
-							  case when pad.att_code is null then null else ac.description || ' - (' || pad.att_code || ')' end as att_code,
-							  pad.att_comment
-							from pssis_attendance_daily pad
-							inner join attendance_code ac
-								on pad.attendance_codeid = ac.id
-							where pad.studentid =  ~(curstudid)
-								and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-								and pad.att_code is not null -- This filters out any attendance codes that have been changed to the default present code
-								;nonemessage=<tr><td colspan="100%">There is no daily attendance code recorded for today.</td></tr>]
+select
+    case when pad.att_code is null then null else ac.description || ' - (' || pad.att_code || ')' end as att_code,
+    to_char(to_date(at.time_in,'SSSSS'),'HH:MI AM') as Time_In,
+    to_char(to_date(at.time_out,'SSSSS'),'HH:MI AM') as Time_Out,
+	pad.att_comment
+from pssis_attendance_daily pad
+inner join attendance_code ac
+	on pad.attendance_codeid = ac.id
+left join attendance_time at
+    on pad.id = at.attendanceid
+where pad.studentid =  ~(curstudid)
+	and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+	and pad.att_code is not null
+						;nonemessage=<tr><td colspan="100%">There is no daily attendance code recorded for today.</td></tr>]
 					<tr>
 							<td>~(att_code)</td>
+							<td>~(Time_In)/~(Time_Out)</td>
 							<td>~(pad.att_comment)</td>
 					</tr>
 					[/tlist_sql]
@@ -149,23 +155,29 @@
 			<thead>
 					<tr>
 							<th>Attendance</th>
+							<th>Time-In/Out</th>
 							<th>Comment</th>
 					</tr>
 			</thead>
 			<tbody>
 					~[tlist_sql;
-							select
-							  case when pad.att_code is null then null else ac.description || ' - (' || pad.att_code || ')' end as att_code,
-							  pad.att_comment
-							from pssis_attendance_daily pad
-							inner join attendance_code ac
-								on pad.attendance_codeid = ac.id
-							where pad.studentid =  ~(curstudid)
-								and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-								and pad.att_code is not null -- This filters out any attendance codes that have been changed to the default present code
-								;nonemessage=<tr><td colspan="100%">There is no daily attendance code recorded for today.</td></tr>]
+select
+    case when pad.att_code is null then null else ac.description || ' - (' || pad.att_code || ')' end as att_code,
+    to_char(to_date(at.time_in,'SSSSS'),'HH:MI AM') as Time_In,
+    to_char(to_date(at.time_out,'SSSSS'),'HH:MI AM') as Time_Out,
+	pad.att_comment
+from pssis_attendance_daily pad
+inner join attendance_code ac
+	on pad.attendance_codeid = ac.id
+left join attendance_time at
+    on pad.id = at.attendanceid
+where pad.studentid =  ~(curstudid)
+	and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+	and pad.att_code is not null
+						;nonemessage=<tr><td colspan="100%">There is no daily attendance code recorded for today.</td></tr>]
 					<tr>
 							<td>~(att_code)</td>
+							<td>~(Time_In)/~(Time_Out)</td>
 							<td>~(pad.att_comment)</td>
 					</tr>
 					[/tlist_sql]
@@ -288,3 +300,54 @@
 			</tbody>
 	</table>
 	[/if#aift_AttTypeMeeting]
+	
+<!-- New Daily Attendance tlist_sql for pulling time-in and time-out
+
+select 
+    case when ac.att_code is null then null else ac.description || ' - (' || ac.att_code || ')' end as att_code,
+    to_char(to_date(at.time_in,'SSSSS'),'HH:MI AM') as Time_In,
+    to_char(to_date(at.time_out,'SSSSS'),'HH:MI AM') as Time_Out,
+    a.att_comment
+from attendance a
+inner join attendance_code ac
+    on a.attendance_codeid = ac.id
+left join attendance_time at
+    on a.id = at.attendanceid
+where a.studentid = ~(curstudid)
+    and a.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+    and a.att_mode_code = 'ATT_ModeDaily'
+    and ac.att_code is not null
+    
+-->
+
+<!-- New Daily Attendance using the old daily attendance and pulling time-in and time-Out
+
+select
+    case when pad.att_code is null then null else ac.description || ' - (' || pad.att_code || ')' end as att_code,
+    to_char(to_date(at.time_in,'SSSSS'),'HH:MI AM') as Time_In,
+    to_char(to_date(at.time_out,'SSSSS'),'HH:MI AM') as Time_Out,
+	pad.att_comment
+from pssis_attendance_daily pad
+inner join attendance_code ac
+	on pad.attendance_codeid = ac.id
+left join attendance_time at
+    on pad.id = at.attendanceid
+where pad.studentid =  ~(curstudid)
+	and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+	and pad.att_code is not null
+
+-->
+
+<!-- Old Daily Attendance tlist_sql
+
+select
+	case when pad.att_code is null then null else ac.description || ' - (' || pad.att_code || ')' end as att_code,
+	pad.att_comment
+from pssis_attendance_daily pad
+inner join attendance_code ac
+	on pad.attendance_codeid = ac.id
+where pad.studentid =  ~(curstudid)
+	and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+	and pad.att_code is not null
+
+-->

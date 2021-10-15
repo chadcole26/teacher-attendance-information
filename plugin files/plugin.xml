@@ -4,7 +4,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 	description="Adds student attendance info to meeting attendance pages" 
 	name="Attendance Info For Teachers" 
-	version="1.4" 
+	version="1.5" 
 	xsi:schemaLocation="http://plugin.powerschool.pearson.com plugin.xsd">
 	<publisher name="Chad Cole">
 		<contact email="chadacole@gmail.com"/>
