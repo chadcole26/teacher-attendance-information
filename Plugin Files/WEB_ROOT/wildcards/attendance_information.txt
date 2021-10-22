@@ -21,7 +21,7 @@
                             sc.abbreviation,
                             t.lastfirst
                         from  ps_class_meeting pcm
-                        left join  ps_calendar_day pcd
+                        inner join  ps_calendar_day pcd
                             on pcd.schoolid = pcm.schoolid
                             and pcd.date_value = pcm.date_value
                             and pcd.bell_schedule_id = pcm.bell_schedule_id
@@ -92,10 +92,10 @@
                             s.external_expression,
                             case when psatmeet.att_code is null then null else ac.description || ' - (' || psatmeet.att_code || ')' end as att_code,
                             c.course_name,
-                            sc.abbreviation,
+                            case when s.schoolid = ~(curschoolid) then null else ' - (' ||sc.abbreviation||')' end as abbreviation,
                             t.lastfirst
                         from  ps_class_meeting pcm
-                        left join  ps_calendar_day pcd
+                        inner join  ps_calendar_day pcd
                             on pcd.schoolid = pcm.schoolid
                             and pcd.date_value = pcm.date_value
                             and pcd.bell_schedule_id = pcm.bell_schedule_id
@@ -249,7 +249,7 @@
                             sc.abbreviation,
                             t.lastfirst
                         from  ps_class_meeting pcm
-                        left join  ps_calendar_day pcd
+                        inner join  ps_calendar_day pcd
                             on pcd.schoolid = pcm.schoolid
                             and pcd.date_value = pcm.date_value
                             and pcd.bell_schedule_id = pcm.bell_schedule_id
@@ -320,10 +320,10 @@
                             s.external_expression,
                             case when psatmeet.att_code is null then null else ac.description || ' - (' || psatmeet.att_code || ')' end as att_code,
                             c.course_name,
-                            sc.abbreviation,
+                            case when s.schoolid = ~(curschoolid) then null else ' - (' ||sc.abbreviation||')' end as abbreviation,
                             t.lastfirst
                         from  ps_class_meeting pcm
-                        left join  ps_calendar_day pcd
+                        inner join  ps_calendar_day pcd
                             on pcd.schoolid = pcm.schoolid
                             and pcd.date_value = pcm.date_value
                             and pcd.bell_schedule_id = pcm.bell_schedule_id
