@@ -13,70 +13,46 @@
 			<tbody>
 				~[if#aift_schoolAbbreviations.prefschool.aift_schoolAbbreviations=]
 					~[tlist_sql;
-                        select
-                            case when attaken.sectionid is null then 'attendancetaken_no.png' else 'attendancetaken_yes.png' end as att_taken,
-                            s.external_expression,
-                            case when psatmeet.att_code is null then null else ac.description || ' - (' || psatmeet.att_code || ')' end as att_code,
-                            c.course_name,
-                            sc.abbreviation,
-                            t.lastfirst
-                        from  ps_class_meeting pcm
-                        left join  ps_calendar_day pcd
-                            on pcd.schoolid = pcm.schoolid
-                            and pcd.date_value = pcm.date_value
-                            and pcd.bell_schedule_id = pcm.bell_schedule_id
-                        inner join sections s
-                            on pcm.sectionid = s.id
-                        inner join schools sc
-                            on s.schoolid = sc.school_number
-                        inner join courses c
-                            on pcm.course_number = c.course_number
-                        inner join teachers t
-                            on t.id = s.teacher
-                        left join   (
-                                        select distinct
-                                           att.sectionid
-                                        from ps_class_meeting pscm1
-                                        left join attendance_taken att
-                                            on pscm1.date_value = att.att_date
-                                            and pscm1.sectionid = att.sectionid
-                                        where pscm1.date_value = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-                                            and pscm1.dropped = 0
-                                            and pscm1.take_attendance = 1
-                                            and pscm1.studentid = ~(curstudid)
-                                        order by att.sectionid, pscm1.period_number
-                                    ) attaken
-                            on pcm.sectionid = attaken.sectionid
-                        left join   (
-                                        select distinct
-                                           psam.sectionid,
-                                           psam.att_code,
-                                           psam.attendance_codeid
-                                        from ps_class_meeting pscm2
-                                        left join pssis_attendance_meeting psam
-                                            on pscm2.studentid = psam.studentid
-                                            and pscm2.sectionid = psam.sectionid
-                                            and pscm2.date_value = psam.att_date
-                                        where pscm2.date_value = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-                                            and pscm2.dropped = 0
-                                            and pscm2.take_attendance = 1
-                                            and pscm2.studentid = ~(curstudid)
-                                        order by psam.sectionid  
-                                    ) psatmeet
-                            on pcm.sectionid = psatmeet.sectionid
-                        left join attendance_code ac
-                            on psatmeet.attendance_codeid = ac.id
-                        where pcm.date_value = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-                            and pcm.dropped = 0
-                            and pcm.take_attendance = 1
-                            and pcm.studentid = ~(curstudid)
-                            ~[if#aift_adaExclude.prefschool.aift_adaExclude=]
-                               and ((s.exclude_ada = 0 and c.exclude_ada = 0) or (s.exclude_ada = 0 and c.exclude_ada = 1))
-                            [/if#aift_adaExclude]
-                            ~[if#aift_remoteEnrollments.prefschool.aift_remoteEnrollments=1]
-                                and pcm.schoolid = ~(curschoolid)
-                            [/if#aift_remoteEnrollments]
-                        order by pcm.periodid;nonemessage=<tr><td colspan="100%">There are no meeting attendance codes recorded for today.</td></tr>]
+						select
+							case when att.id is null then 'attendancetaken_no.png' else 'attendancetaken_yes.png' end as att_taken,
+							s.external_expression,
+							case when pam.att_code is null then null else ac.description || ' - (' || pam.att_code || ')' end as att_code,
+							c.course_name,
+							sc.abbreviation,
+							t.lastfirst
+						from  ps_class_meeting pcm
+						inner join  ps_calendar_day pcd
+							on pcd.schoolid = pcm.schoolid
+							and pcd.date_value = pcm.date_value
+							and pcd.bell_schedule_id = pcm.bell_schedule_id
+						inner join sections s
+							on pcm.sectionid = s.id
+						inner join schools sc
+							on s.schoolid = sc.school_number
+						inner join courses c
+							on pcm.course_number = c.course_number
+						inner join teachers t
+							on t.id = s.teacher
+						left join attendance_taken att
+							on pcm.sectionid = att.sectionid
+							and pcm.date_value = att.att_date
+						left join pssis_attendance_meeting pam
+							on pcm.studentid = pam.studentid
+							and pcm.sectionid = pam.sectionid
+							and pcm.date_value = pam.att_date
+						left join attendance_code ac
+							on pam.attendance_codeid = ac.id
+						where pcm.date_value = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+							and pcm.dropped = 0
+							and pcm.take_attendance = 1
+							and pcm.studentid = ~(curstudid)
+							~[if#aift_adaExclude.prefschool.aift_adaExclude=]
+								and ((s.exclude_ada = 0 and c.exclude_ada = 0) or (s.exclude_ada = 0 and c.exclude_ada = 1))
+							[/if#aift_adaExclude]
+							~[if#aift_remoteEnrollments.prefschool.aift_remoteEnrollments=1]
+								and pcm.schoolid = ~(curschoolid)
+							[/if#aift_remoteEnrollments]
+						order by pcm.periodid;nonemessage=<tr><td colspan="100%">There are no meeting attendance codes recorded for today.</td></tr>]
 					<tr>
 							<td><img src="/images/~(att_taken)" height="15" width="15" style="vertical-align:middle;"> - ~(se.external_expression)</td>
 							<td>~(ad.att_code)</td>
@@ -86,70 +62,46 @@
 				[/tlist_sql]
 			[else#aift_schoolAbbreviations]
 					~[tlist_sql;
-                        select
-                            case when attaken.sectionid is null then 'attendancetaken_no.png' else 'attendancetaken_yes.png' end as att_taken,
-                            s.external_expression,
-                            case when psatmeet.att_code is null then null else ac.description || ' - (' || psatmeet.att_code || ')' end as att_code,
-                            c.course_name,
-                            case when s.schoolid = ~(curschoolid) then null else ' - (' ||sc.abbreviation||')' end as abbreviation,
-                            t.lastfirst
-                        from  ps_class_meeting pcm
-                        left join  ps_calendar_day pcd
-                            on pcd.schoolid = pcm.schoolid
-                            and pcd.date_value = pcm.date_value
-                            and pcd.bell_schedule_id = pcm.bell_schedule_id
-                        inner join sections s
-                            on pcm.sectionid = s.id
-                        inner join schools sc
-                            on s.schoolid = sc.school_number
-                        inner join courses c
-                            on pcm.course_number = c.course_number
-                        inner join teachers t
-                            on t.id = s.teacher
-                        left join   (
-                                        select distinct
-                                           att.sectionid
-                                        from ps_class_meeting pscm1
-                                        left join attendance_taken att
-                                            on pscm1.date_value = att.att_date
-                                            and pscm1.sectionid = att.sectionid
-                                        where pscm1.date_value = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-                                            and pscm1.dropped = 0
-                                            and pscm1.take_attendance = 1
-                                            and pscm1.studentid = ~(curstudid)
-                                        order by att.sectionid, pscm1.period_number
-                                    ) attaken
-                            on pcm.sectionid = attaken.sectionid
-                        left join   (
-                                        select distinct
-                                           psam.sectionid,
-                                           psam.att_code,
-                                           psam.attendance_codeid
-                                        from ps_class_meeting pscm2
-                                        left join pssis_attendance_meeting psam
-                                            on pscm2.studentid = psam.studentid
-                                            and pscm2.sectionid = psam.sectionid
-                                            and pscm2.date_value = psam.att_date
-                                        where pscm2.date_value = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-                                            and pscm2.dropped = 0
-                                            and pscm2.take_attendance = 1
-                                            and pscm2.studentid = ~(curstudid)
-                                        order by psam.sectionid  
-                                    ) psatmeet
-                            on pcm.sectionid = psatmeet.sectionid
-                        left join attendance_code ac
-                            on psatmeet.attendance_codeid = ac.id
-                        where pcm.date_value = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-                            and pcm.dropped = 0
-                            and pcm.take_attendance = 1
-                            and pcm.studentid = ~(curstudid)
-                            ~[if#aift_adaExclude.prefschool.aift_adaExclude=]
-                               and ((s.exclude_ada = 0 and c.exclude_ada = 0) or (s.exclude_ada = 0 and c.exclude_ada = 1))
-                            [/if#aift_adaExclude]
-                            ~[if#aift_remoteEnrollments.prefschool.aift_remoteEnrollments=1]
-                                and pcm.schoolid = ~(curschoolid)
-                            [/if#aift_remoteEnrollments]
-                        order by pcm.periodid;nonemessage=<tr><td colspan="100%">There are no meeting attendance codes recorded for today.</td></tr>]
+						select
+							case when att.id is null then 'attendancetaken_no.png' else 'attendancetaken_yes.png' end as att_taken,
+							s.external_expression,
+							case when pam.att_code is null then null else ac.description || ' - (' || pam.att_code || ')' end as att_code,
+							c.course_name,
+							case when s.schoolid = ~(curschoolid) then null else ' - (' ||sc.abbreviation||')' end as abbreviation,
+							t.lastfirst
+						from  ps_class_meeting pcm
+						inner join  ps_calendar_day pcd
+							on pcd.schoolid = pcm.schoolid
+							and pcd.date_value = pcm.date_value
+							and pcd.bell_schedule_id = pcm.bell_schedule_id
+						inner join sections s
+							on pcm.sectionid = s.id
+						inner join schools sc
+							on s.schoolid = sc.school_number
+						inner join courses c
+							on pcm.course_number = c.course_number
+						inner join teachers t
+							on t.id = s.teacher
+						left join attendance_taken att
+							on pcm.sectionid = att.sectionid
+							and pcm.date_value = att.att_date
+						left join pssis_attendance_meeting pam
+							on pcm.studentid = pam.studentid
+							and pcm.sectionid = pam.sectionid
+							and pcm.date_value = pam.att_date
+						left join attendance_code ac
+							on pam.attendance_codeid = ac.id
+						where pcm.date_value = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+							and pcm.dropped = 0
+							and pcm.take_attendance = 1
+							and pcm.studentid = ~(curstudid)
+							~[if#aift_adaExclude.prefschool.aift_adaExclude=]
+								and ((s.exclude_ada = 0 and c.exclude_ada = 0) or (s.exclude_ada = 0 and c.exclude_ada = 1))
+							[/if#aift_adaExclude]
+							~[if#aift_remoteEnrollments.prefschool.aift_remoteEnrollments=1]
+								and pcm.schoolid = ~(curschoolid)
+							[/if#aift_remoteEnrollments]
+						order by pcm.periodid;nonemessage=<tr><td colspan="100%">There are no meeting attendance codes recorded for today.</td></tr>]
 					<tr>
 							<td><img src="/images/~(att_taken)" height="15" width="15" style="vertical-align:middle;"> - ~(se.external_expression)</td>
 							<td>~(ad.att_code)</td>
@@ -167,23 +119,25 @@
 			<thead>
 					<tr>
 							<th>Attendance</th>
+							<th>Time-In/Out</th>
 							<th>Comment</th>
 					</tr>
 			</thead>
 			<tbody>
 					~[tlist_sql;
-							select
-							  case when pad.att_code is null then null else ac.description || ' - (' || pad.att_code || ')' end as att_code,
-							  pad.att_comment
-							from pssis_attendance_daily pad
-							inner join attendance_code ac
-								on pad.attendance_codeid = ac.id
-							where pad.studentid =  ~(curstudid)
-								and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-								and pad.att_code is not null -- This filters out any attendance codes that have been changed to the default present code
-								;nonemessage=<tr><td colspan="100%">There is no daily attendance code recorded for today.</td></tr>]
+						select
+							case when pad.att_code is null then null else ac.description || ' - (' || pad.att_code || ')' end as att_code,
+							pad.att_comment
+						from pssis_attendance_daily pad
+						inner join attendance_code ac
+							on pad.attendance_codeid = ac.id
+						where pad.studentid =  ~(curstudid)
+							and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+							and pad.att_code is not null
+						;nonemessage=<tr><td colspan="100%">There is no daily attendance code recorded for today.</td></tr>]
 					<tr>
 							<td>~(att_code)</td>
+							<td>~(Time_In)/~(Time_Out)</td>
 							<td>~(pad.att_comment)</td>
 					</tr>
 					[/tlist_sql]
@@ -197,23 +151,25 @@
 			<thead>
 					<tr>
 							<th>Attendance</th>
+							<th>Time-In/Out</th>
 							<th>Comment</th>
 					</tr>
 			</thead>
 			<tbody>
 					~[tlist_sql;
-							select
-							  case when pad.att_code is null then null else ac.description || ' - (' || pad.att_code || ')' end as att_code,
-							  pad.att_comment
-							from pssis_attendance_daily pad
-							inner join attendance_code ac
-								on pad.attendance_codeid = ac.id
-							where pad.studentid =  ~(curstudid)
-								and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-								and pad.att_code is not null -- This filters out any attendance codes that have been changed to the default present code
-								;nonemessage=<tr><td colspan="100%">There is no daily attendance code recorded for today.</td></tr>]
+						select
+							case when pad.att_code is null then null else ac.description || ' - (' || pad.att_code || ')' end as att_code,
+							pad.att_comment
+						from pssis_attendance_daily pad
+						inner join attendance_code ac
+							on pad.attendance_codeid = ac.id
+						where pad.studentid =  ~(curstudid)
+							and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+							and pad.att_code is not null
+						;nonemessage=<tr><td colspan="100%">There is no daily attendance code recorded for today.</td></tr>]
 					<tr>
 							<td>~(att_code)</td>
+							<td>~(Time_In)/~(Time_Out)</td>
 							<td>~(pad.att_comment)</td>
 					</tr>
 					[/tlist_sql]
@@ -235,70 +191,46 @@
 			<tbody>
 				~[if#aift_schoolAbbreviations.prefschool.aift_schoolAbbreviations=]
 					~[tlist_sql;
-                        select
-                            case when attaken.sectionid is null then 'attendancetaken_no.png' else 'attendancetaken_yes.png' end as att_taken,
-                            s.external_expression,
-                            case when psatmeet.att_code is null then null else ac.description || ' - (' || psatmeet.att_code || ')' end as att_code,
-                            c.course_name,
-                            sc.abbreviation,
-                            t.lastfirst
-                        from  ps_class_meeting pcm
-                        left join  ps_calendar_day pcd
-                            on pcd.schoolid = pcm.schoolid
-                            and pcd.date_value = pcm.date_value
-                            and pcd.bell_schedule_id = pcm.bell_schedule_id
-                        inner join sections s
-                            on pcm.sectionid = s.id
-                        inner join schools sc
-                            on s.schoolid = sc.school_number
-                        inner join courses c
-                            on pcm.course_number = c.course_number
-                        inner join teachers t
-                            on t.id = s.teacher
-                        left join   (
-                                        select distinct
-                                           att.sectionid
-                                        from ps_class_meeting pscm1
-                                        left join attendance_taken att
-                                            on pscm1.date_value = att.att_date
-                                            and pscm1.sectionid = att.sectionid
-                                        where pscm1.date_value = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-                                            and pscm1.dropped = 0
-                                            and pscm1.take_attendance = 1
-                                            and pscm1.studentid = ~(curstudid)
-                                        order by att.sectionid, pscm1.period_number
-                                    ) attaken
-                            on pcm.sectionid = attaken.sectionid
-                        left join   (
-                                        select distinct
-                                           psam.sectionid,
-                                           psam.att_code,
-                                           psam.attendance_codeid
-                                        from ps_class_meeting pscm2
-                                        left join pssis_attendance_meeting psam
-                                            on pscm2.studentid = psam.studentid
-                                            and pscm2.sectionid = psam.sectionid
-                                            and pscm2.date_value = psam.att_date
-                                        where pscm2.date_value = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-                                            and pscm2.dropped = 0
-                                            and pscm2.take_attendance = 1
-                                            and pscm2.studentid = ~(curstudid)
-                                        order by psam.sectionid  
-                                    ) psatmeet
-                            on pcm.sectionid = psatmeet.sectionid
-                        left join attendance_code ac
-                            on psatmeet.attendance_codeid = ac.id
-                        where pcm.date_value = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-                            and pcm.dropped = 0
-                            and pcm.take_attendance = 1
-                            and pcm.studentid = ~(curstudid)
-                            ~[if#aift_adaExclude.prefschool.aift_adaExclude=]
-                               and ((s.exclude_ada = 0 and c.exclude_ada = 0) or (s.exclude_ada = 0 and c.exclude_ada = 1))
-                            [/if#aift_adaExclude]
-                            ~[if#aift_remoteEnrollments.prefschool.aift_remoteEnrollments=1]
-                                and pcm.schoolid = ~(curschoolid)
-                            [/if#aift_remoteEnrollments]
-                        order by pcm.periodid;nonemessage=<tr><td colspan="100%">There are no meeting attendance codes recorded for today.</td></tr>]
+						select
+							case when att.id is null then 'attendancetaken_no.png' else 'attendancetaken_yes.png' end as att_taken,
+							s.external_expression,
+							case when pam.att_code is null then null else ac.description || ' - (' || pam.att_code || ')' end as att_code,
+							c.course_name,
+							sc.abbreviation,
+							t.lastfirst
+						from  ps_class_meeting pcm
+						inner join  ps_calendar_day pcd
+							on pcd.schoolid = pcm.schoolid
+							and pcd.date_value = pcm.date_value
+							and pcd.bell_schedule_id = pcm.bell_schedule_id
+						inner join sections s
+							on pcm.sectionid = s.id
+						inner join schools sc
+							on s.schoolid = sc.school_number
+						inner join courses c
+							on pcm.course_number = c.course_number
+						inner join teachers t
+							on t.id = s.teacher
+						left join attendance_taken att
+							on pcm.sectionid = att.sectionid
+							and pcm.date_value = att.att_date
+						left join pssis_attendance_meeting pam
+							on pcm.studentid = pam.studentid
+							and pcm.sectionid = pam.sectionid
+							and pcm.date_value = pam.att_date
+						left join attendance_code ac
+							on pam.attendance_codeid = ac.id
+						where pcm.date_value = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+							and pcm.dropped = 0
+							and pcm.take_attendance = 1
+							and pcm.studentid = ~(curstudid)
+							~[if#aift_adaExclude.prefschool.aift_adaExclude=]
+								and ((s.exclude_ada = 0 and c.exclude_ada = 0) or (s.exclude_ada = 0 and c.exclude_ada = 1))
+							[/if#aift_adaExclude]
+							~[if#aift_remoteEnrollments.prefschool.aift_remoteEnrollments=1]
+								and pcm.schoolid = ~(curschoolid)
+							[/if#aift_remoteEnrollments]
+						order by pcm.periodid;nonemessage=<tr><td colspan="100%">There are no meeting attendance codes recorded for today.</td></tr>]
 					<tr>
 							<td><img src="/images/~(att_taken)" height="15" width="15" style="vertical-align:middle;"> - ~(se.external_expression)</td>
 							<td>~(ad.att_code)</td>
@@ -308,70 +240,46 @@
 				[/tlist_sql]
 			[else#aift_schoolAbbreviations]
 					~[tlist_sql;
-                        select
-                            case when attaken.sectionid is null then 'attendancetaken_no.png' else 'attendancetaken_yes.png' end as att_taken,
-                            s.external_expression,
-                            case when psatmeet.att_code is null then null else ac.description || ' - (' || psatmeet.att_code || ')' end as att_code,
-                            c.course_name,
-                            case when s.schoolid = ~(curschoolid) then null else ' - (' ||sc.abbreviation||')' end as abbreviation,
-                            t.lastfirst
-                        from  ps_class_meeting pcm
-                        left join  ps_calendar_day pcd
-                            on pcd.schoolid = pcm.schoolid
-                            and pcd.date_value = pcm.date_value
-                            and pcd.bell_schedule_id = pcm.bell_schedule_id
-                        inner join sections s
-                            on pcm.sectionid = s.id
-                        inner join schools sc
-                            on s.schoolid = sc.school_number
-                        inner join courses c
-                            on pcm.course_number = c.course_number
-                        inner join teachers t
-                            on t.id = s.teacher
-                        left join   (
-                                        select distinct
-                                           att.sectionid
-                                        from ps_class_meeting pscm1
-                                        left join attendance_taken att
-                                            on pscm1.date_value = att.att_date
-                                            and pscm1.sectionid = att.sectionid
-                                        where pscm1.date_value = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-                                            and pscm1.dropped = 0
-                                            and pscm1.take_attendance = 1
-                                            and pscm1.studentid = ~(curstudid)
-                                        order by att.sectionid, pscm1.period_number
-                                    ) attaken
-                            on pcm.sectionid = attaken.sectionid
-                        left join   (
-                                        select distinct
-                                           psam.sectionid,
-                                           psam.att_code,
-                                           psam.attendance_codeid
-                                        from ps_class_meeting pscm2
-                                        left join pssis_attendance_meeting psam
-                                            on pscm2.studentid = psam.studentid
-                                            and pscm2.sectionid = psam.sectionid
-                                            and pscm2.date_value = psam.att_date
-                                        where pscm2.date_value = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-                                            and pscm2.dropped = 0
-                                            and pscm2.take_attendance = 1
-                                            and pscm2.studentid = ~(curstudid)
-                                        order by psam.sectionid  
-                                    ) psatmeet
-                            on pcm.sectionid = psatmeet.sectionid
-                        left join attendance_code ac
-                            on psatmeet.attendance_codeid = ac.id
-                        where pcm.date_value = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-                            and pcm.dropped = 0
-                            and pcm.take_attendance = 1
-                            and pcm.studentid = ~(curstudid)
-                            ~[if#aift_adaExclude.prefschool.aift_adaExclude=]
-                               and ((s.exclude_ada = 0 and c.exclude_ada = 0) or (s.exclude_ada = 0 and c.exclude_ada = 1))
-                            [/if#aift_adaExclude]
-                            ~[if#aift_remoteEnrollments.prefschool.aift_remoteEnrollments=1]
-                                and pcm.schoolid = ~(curschoolid)
-                            [/if#aift_remoteEnrollments]
-                        order by pcm.periodid;nonemessage=<tr><td colspan="100%">There are no meeting attendance codes recorded for today.</td></tr>]
+						select
+							case when att.id is null then 'attendancetaken_no.png' else 'attendancetaken_yes.png' end as att_taken,
+							s.external_expression,
+							case when pam.att_code is null then null else ac.description || ' - (' || pam.att_code || ')' end as att_code,
+							c.course_name,
+							case when s.schoolid = ~(curschoolid) then null else ' - (' ||sc.abbreviation||')' end as abbreviation,
+							t.lastfirst
+						from  ps_class_meeting pcm
+						inner join  ps_calendar_day pcd
+							on pcd.schoolid = pcm.schoolid
+							and pcd.date_value = pcm.date_value
+							and pcd.bell_schedule_id = pcm.bell_schedule_id
+						inner join sections s
+							on pcm.sectionid = s.id
+						inner join schools sc
+							on s.schoolid = sc.school_number
+						inner join courses c
+							on pcm.course_number = c.course_number
+						inner join teachers t
+							on t.id = s.teacher
+						left join attendance_taken att
+							on pcm.sectionid = att.sectionid
+							and pcm.date_value = att.att_date
+						left join pssis_attendance_meeting pam
+							on pcm.studentid = pam.studentid
+							and pcm.sectionid = pam.sectionid
+							and pcm.date_value = pam.att_date
+						left join attendance_code ac
+							on pam.attendance_codeid = ac.id
+						where pcm.date_value = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+							and pcm.dropped = 0
+							and pcm.take_attendance = 1
+							and pcm.studentid = ~(curstudid)
+							~[if#aift_adaExclude.prefschool.aift_adaExclude=]
+								and ((s.exclude_ada = 0 and c.exclude_ada = 0) or (s.exclude_ada = 0 and c.exclude_ada = 1))
+							[/if#aift_adaExclude]
+							~[if#aift_remoteEnrollments.prefschool.aift_remoteEnrollments=1]
+								and pcm.schoolid = ~(curschoolid)
+							[/if#aift_remoteEnrollments]
+						order by pcm.periodid;nonemessage=<tr><td colspan="100%">There are no meeting attendance codes recorded for today.</td></tr>]
 					<tr>
 							<td><img src="/images/~(att_taken)" height="15" width="15" style="vertical-align:middle;"> - ~(se.external_expression)</td>
 							<td>~(ad.att_code)</td>
@@ -384,3 +292,54 @@
 			</tbody>
 	</table>
 	[/if#aift_AttTypeMeeting]
+	
+<!-- New Daily Attendance tlist_sql for pulling time-in and time-out - does not currently work
+
+select 
+    case when ac.att_code is null then null else ac.description || ' - (' || ac.att_code || ')' end as att_code,
+    to_char(to_date(at.time_in,'SSSSS'),'HH:MI AM') as Time_In,
+    to_char(to_date(at.time_out,'SSSSS'),'HH:MI AM') as Time_Out,
+    a.att_comment
+from attendance a
+inner join attendance_code ac
+    on a.attendance_codeid = ac.id
+left join attendance_time at
+    on a.id = at.attendanceid
+where a.studentid = ~(curstudid)
+    and a.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+    and a.att_mode_code = 'ATT_ModeDaily'
+    and ac.att_code is not null
+    
+-->
+
+<!-- New Daily Attendance using the old daily attendance and pulling time-in and time-Out - does not currently work
+
+select
+    case when pad.att_code is null then null else ac.description || ' - (' || pad.att_code || ')' end as att_code,
+    to_char(to_date(at.time_in,'SSSSS'),'HH:MI AM') as Time_In,
+    to_char(to_date(at.time_out,'SSSSS'),'HH:MI AM') as Time_Out,
+	pad.att_comment
+from pssis_attendance_daily pad
+inner join attendance_code ac
+	on pad.attendance_codeid = ac.id
+left join attendance_time at
+    on pad.id = at.attendanceid
+where pad.studentid =  ~(curstudid)
+	and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+	and pad.att_code is not null
+
+-->
+
+<!-- Current Daily Attendance tlist_sql
+
+select
+	case when pad.att_code is null then null else ac.description || ' - (' || pad.att_code || ')' end as att_code,
+	pad.att_comment
+from pssis_attendance_daily pad
+inner join attendance_code ac
+	on pad.attendance_codeid = ac.id
+where pad.studentid =  ~(curstudid)
+	and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+	and pad.att_code is not null
+
+-->
