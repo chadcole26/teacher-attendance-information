@@ -15,7 +15,7 @@
 			var attendanceInformation = [
 				~[tlist_sql;
 					select
-							attdata.studentsdcid
+						attdata.studentsdcid as dcid
 					from 
 						(
 							select
@@ -85,7 +85,7 @@
 					~[if#aift_AttTypeMeeting.prefschool.aift_AttType=0]
 						where attdata.meetingcount > 0;]
 					[/if#aift_AttTypeMeeting]
-						"~(1)",
+						"~(dcid)",
 				[/tlist_sql]
 			];
 		
@@ -99,17 +99,29 @@
 		
 			//Function step 3 - Add the chairs
 			attendanceInformation.forEach(dcid => {
-					angularCustomizations.addCustomization('pss-integrations-attendance', {
-							injectionType: 'append',
-							querySelector: `#alerts-${dcid} + td + td`,
-							template: `<a href="/teachers/alerts/attendance_information_sgy.html?frn=001${dcid}&att_date=~[date]" class="dialogM"  title="Attendance Information for Teachers"><img src="/images/attendance-red-30x30.svg" alt="Show Attendance Info" width="25" height="25" style="vertical-align: text-bottom;"></a>`
+				angularCustomizations.addCustomization('pss-integrations-attendance', {
+					injectionType: 'append',
+					querySelector: `#alerts-${dcid} + td + td`,
+					template: `<a href="/teachers/alerts/attendance_information_sgy.html?frn=001${dcid}&att_date=~[date]" class="dialogM dockedDialog dialogAlert" title="Attendance Information for Teachers"><img src="/images/attendance-red-30x30.svg" alt="Show Attendance Info" width="25" height="25" style="vertical-align: text-bottom;"></a>`
 				});
-					angularCustomizations.addCustomization('pss-integrations-attendance', {
-							iconURL:`/images/attendance-red-30x30.svg`,
-							templateURL: `/teachers/alerts/attendance_information_sgy.html?frn=001${dcid}&att_date=~[date]`,
-							type: 'popover'
+				angularCustomizations.addCustomization('pss-integrations-attendance', {
+					iconURL:`/images/attendance-red-30x30.svg`,
+					templateURL: `/teachers/alerts/attendance_information_sgy.html?frn=001${dcid}&att_date=~[date]`,
+					type: 'alert'
 				});
-			});
+			}); 
+			
+			/*attendanceInformation.forEach(dcid => {	
+				angularCustomizations.addCustomization('pss-integrations-attendance', {
+					iconURL: `/images/attendance-red-30x30.svg`,
+					templateURL: `/teachers/alerts/attendance_information_sgy.html?frn=001${dcid}&att_date=~[date]`,
+					type: 'alert',
+					dataModelId: dcid,
+					title: 'Attendance Information'
+				});				
+			});*/
+			
+			$j('a.dialogAlert').live('click', psDialog);
 		
 		});
 	</script>
