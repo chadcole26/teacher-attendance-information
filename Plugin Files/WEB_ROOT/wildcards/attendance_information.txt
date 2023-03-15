@@ -169,7 +169,7 @@
 			<thead>
 					<tr>
 							<th>Attendance</th>
-							<th>Time-In/Out</th>
+							<!--<th>Time-In/Out</th>-->
 							<th>Comment</th>
 					</tr>
 			</thead>
@@ -187,7 +187,6 @@
 						;nonemessage=<tr><td colspan="100%">There is no daily attendance code recorded for today.</td></tr>]
 					<tr>
 							<td>~(att_code)</td>
-							<td>~(Time_In)/~(Time_Out)</td>
 							<td>~(pad.att_comment)</td>
 					</tr>
 					[/tlist_sql]
@@ -201,7 +200,7 @@
 			<thead>
 					<tr>
 							<th>Attendance</th>
-							<th>Time-In/Out</th>
+							<!--<th>Time-In/Out</th>-->
 							<th>Comment</th>
 					</tr>
 			</thead>
@@ -219,7 +218,6 @@
 						;nonemessage=<tr><td colspan="100%">There is no daily attendance code recorded for today.</td></tr>]
 					<tr>
 							<td>~(att_code)</td>
-							<td>~(Time_In)/~(Time_Out)</td>
 							<td>~(pad.att_comment)</td>
 					</tr>
 					[/tlist_sql]
