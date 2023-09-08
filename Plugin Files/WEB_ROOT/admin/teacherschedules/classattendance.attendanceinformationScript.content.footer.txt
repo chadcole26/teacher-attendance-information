@@ -1,0 +1,34 @@
+~[if#aift_enabledSchoolScript.prefschool.aift_enabledSchool=]
+
+<script type="text/javascript">
+
+    $j(document).ready(function(){
+        
+        const dmo = ~[prefschool:aift_AttType];
+        
+        $j('.aiftAlert').each(function(){
+            
+            var ccid    = $j(this).attr('ccid');
+            var attm    = $j(this).attr('attmeetingcount');
+            var attd    = $j(this).attr('attdailycount');
+            
+            if ( dmo == 1 && (attm > 0 || attd > 0) ) {
+                $j('tr[id=' + ccid + '] td:eq(3)').append($j(this).html());
+            } else {
+                if ( dmo == 2 && attd > 0 ) {
+                    $j('tr[id=' + ccid + '] td:eq(3)').append($j(this).html());
+                } else {
+                    if ( dmo == 3 && attm > 0) {
+                        $j('tr[id=' + ccid + '] td:eq(3)').append($j(this).html());
+                    };
+                };
+            };
+            
+            $j(this).remove();
+            
+        });
+    });
+
+</script>
+
+[/if#aift_enabledSchoolScript]

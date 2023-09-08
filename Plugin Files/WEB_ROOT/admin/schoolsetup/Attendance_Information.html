@@ -54,6 +54,9 @@
 				<h2>Attendance Information for Teachers - School Managed Settings</h2>
 				<table class="linkDescList" id="aift_schoolOptions">
 					<tbody>
+						<tr class="headerrow">
+							<td class="bold">Alert Settings</td>
+						</tr>
 						<tr>
 							<td>
 							    <input type="checkbox" value="1" name="[prefschool]aift_enabledSchool" id="aift_enabledSchool"  onchange="schoolEnabled()" />&nbsp;
@@ -64,12 +67,12 @@
 							<td>
 							    <strong>Show the red chair for...</strong>&nbsp;&nbsp; <a href="#aift_AttTypeMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15"></a><br>
 							    <span class="spaced20">&nbsp;</span>Daily and Meeting Options:<br>
-							    <span class="spaced40">&nbsp;</span><input type="radio" value="1" name="[prefschool]aift_AttType" />Daily Attendance Only<br>
-							    <span class="spaced40">&nbsp;</span><input type="radio" value="0" name="[prefschool]aift_AttType" />Meeting Attendance Only<br>
-							    <span class="spaced40">&nbsp;</span><input type="radio" value="" name="[prefschool]aift_AttType" />Daily and/or Meeting Attendance (Default Setting)<br>
+							     <span class="spaced40">&nbsp;</span><input type="radio" value="1" name="[prefschool]aift_AttType" />Daily and/or Meeting Attendance (Default Setting)<br>
+							    <span class="spaced40">&nbsp;</span><input type="radio" value="2" name="[prefschool]aift_AttType" />Daily Attendance Only<br>
+							    <span class="spaced40">&nbsp;</span><input type="radio" value="3" name="[prefschool]aift_AttType" />Meeting Attendance Only<br>
 							    <span class="spaced20">&nbsp;</span>Attendance Code Options:<br>
-							    <span class="spaced40">&nbsp;</span><input type="radio" value="1" name="[prefschool]aift_allAttendance" />All Attendance Codes<br>
-							    <span class="spaced40">&nbsp;</span><input type="radio" value="" name="[prefschool]aift_allAttendance" />Absences Only (Default Setting)<br>
+							    <span class="spaced40">&nbsp;</span><input type="radio" value="1" name="[prefschool]aift_allAttendance" />Absences Only (Default Setting)<br>
+							    <span class="spaced40">&nbsp;</span><input type="radio" value="2" name="[prefschool]aift_allAttendance" />All Attendance Codes<br>
 							</td>
 						</tr>
 						<!--
@@ -79,6 +82,9 @@
 						    </td>
 						</tr>
 						-->
+						<tr class="headerrow hideShow">
+							<td class="bold">Dialog Information Settings</td>
+						</tr>
 						<tr class="hideShow">
 							<td>
 							    <input type="checkbox" value="1" name="[prefschool]aift_remoteEnrollments" id="aift_remoteEnrollments" />&nbsp;

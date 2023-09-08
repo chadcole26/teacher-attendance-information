@@ -1,5 +1,5 @@
 	<p class="alertHeader">Attendance Information for ~(first_name) ~(last_name) -  ~(gpv.att_date)</p>
-	~[if#aift_AttTypeBoth.prefschool.aift_AttType=]
+	~[if#aift_AttTypeBoth.prefschool.aift_AttType=1]
 	<p><b>Meeting Attendance:</b></p>
 	<table class="linkDescList">
 			<thead>
@@ -194,7 +194,7 @@
 	</table>
 	[/if#aift_AttTypeBoth]
 	
-	~[if#aift_AttTypeDaily.prefschool.aift_AttType=1]
+	~[if#aift_AttTypeDaily.prefschool.aift_AttType=2]
 	<p><b>Daily Attendance:</b></p>
 	<table class="linkDescList">
 			<thead>
@@ -225,7 +225,7 @@
 	</table>
 	[/if#aift_AttTypeDaily]
 	
-	~[if#aift_AttTypeMeeting.prefschool.aift_AttType=0]
+	~[if#aift_AttTypeMeeting.prefschool.aift_AttType=3]
 	<p><b>Meeting Attendance:</b></p>
 	<table class="linkDescList">
 			<thead>

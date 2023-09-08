@@ -1,106 +1,56 @@
 ~[if#aift_enabledSchool.prefschool.aift_enabledSchool=]
-	<!-- Teacher Attendance Info Notification Created by Chad Cole -->
-	<!-- This script adds an attendance information button, on the teacher's meeting attendance screen, for any student who has any attendance codes entered for the day -->
 
-	<!-- Test to see if the user clicked into the single meeting mode (chair) to take attendance -->
-	~[if#meetingaift.~[gpv:pagetype]=meeting]
+	~[ATT_RecordMeetingTeacherStudentList]
+    ~[tlist_sql;
+        SELECT 
+            'ccid_'||[ccid] AS studentsccid,
+            CASE
+                WHEN ~[prefschool:aift_allAttendance] = 1  THEN (
+                    SELECT COUNT(*)
+                    FROM cc cc1
+                    LEFT OUTER JOIN pssis_attendance_meeting pam1
+                        ON pam1.studentid = cc1.studentid
+                    WHERE cc1.id = [ccid]
+                        AND pam1.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+                        AND pam1.att_code IS NOT NULL
+                        AND pam1.presence_status_cd = 'Absent')
+                WHEN ~[prefschool:aift_allAttendance] = 2 THEN (
+                    SELECT COUNT(*)
+                    FROM cc cc2
+                    LEFT OUTER JOIN pssis_attendance_meeting pam2
+                        ON pam2.studentid = cc2.studentid
+                    WHERE cc2.id = [ccid]
+                        AND pam2.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+                        AND pam2.att_code IS NOT NULL)
+                ELSE 0 END AS attmeetingcount,
+            CASE
+                WHEN ~[prefschool:aift_allAttendance] = 1  THEN (
+                    SELECT COUNT(*)
+                    FROM cc cc3
+                    LEFT OUTER JOIN pssis_attendance_daily pad1
+                        ON pad1.studentid = cc3.studentid
+                    WHERE cc3.id = [ccid]
+                        AND pad1.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+                        AND pad1.att_code IS NOT NULL
+                        AND pad1.presence_status_cd = 'Absent')
+                WHEN ~[prefschool:aift_allAttendance] = 2 THEN (
+                    SELECT COUNT(*)
+                    FROM cc cc4
+                    LEFT OUTER JOIN pssis_attendance_daily pad2
+                        ON pad2.studentid = cc4.studentid
+                    WHERE cc4.id = [ccid]
+                        AND pad2.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
+                        AND pad2.att_code IS NOT NULL)
+                ELSE 0 END AS attdailycount,
+            s.dcid AS studentdcid,
+            '~(gpv.att_date)' AS attdate
+        FROM cc cc
+        JOIN students s on s.id = cc.studentid
+        WHERE cc.id = [ccid]
+    ]
+        <div class="aiftAlert" ccid="~(studentsccid)" attmeetingcount="~(attmeetingcount)" attdailycount="~(attdailycount)" style="display:none;">
+            <a href="/teachers/alerts/attendance_information.html?frn=001~(studentdcid)&att_date=~(attdate)" class="dialogM dockedDialog" title="Attendance Information for Teachers"><img src="/images/attendance-red-30x30.svg" alt="Show Attendance Info" width="25" height="25" style="vertical-align: bottom;"></a>
+        </div>
+    [/tlist_sql]	
 
-	<!-- If the user clicked into the chair, this script will run and add the attendance information button at the end of the appropriate student rows -->
-	<script language="javascript">
-		//The variable created in this function will be an array containing the student and course info needed to add the button to the correct rows on the attendance screen
-		//The query pulls a list of all students in the class who have meeting or daily attendance records for the current day
-		$j(document).ready(function(){
-			//Function step 1
-			var attendanceNotifications = {
-				~[tlist_sql;
-					select
-							attdata.ccid,
-							attdata.studentsdcid
-					from 
-                        (
-                            select
-                                ~[if#aift_AttType.prefschool.aift_AttType=]
-                                    (
-                                        select count(*)
-                                        from pssis_attendance_meeting pam 
-                                        where s.id = pam.studentid 
-                                            and pam.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-                                            and pam.att_code is not null -- This filters out any attendance codes that have been changed to the default present code
-                                            ~[if#aift_allAttendanceM.prefschool.aift_allAttendance=]
-                                            and pam.presence_status_cd = 'Absent'
-                                            [/if#aift_allAttendanceM]
-                                            --~[if#aift_showCurrent.prefschool.aift_showCurrent=]
-                                            --and pam.sectionid != ~(gpv.sectionid;sqlText)
-                                            --[/if#aift_showCurrent]
-                                    ) as meetingcount,
-                                    (
-                                        select count(*)
-                                        from pssis_attendance_daily pad
-                                        where s.id = pad.studentid 
-                                            and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-                                            and pad.att_code is not null -- This filters out any attendance codes that have been changed to the default present code
-                                            ~[if#aift_allAttendanceD.prefschool.aift_allAttendance=]
-                                            and pad.presence_status_cd = 'Absent'
-                                            [/if#aift_allAttendanceD]
-                                    ) as dailycount,
-                                [/if#aift_AttType]
-                                ~[if#aift_AttType1.prefschool.aift_AttType=1]
-                                    (
-                                        select count(*)
-                                        from pssis_attendance_daily pad
-                                        where s.id = pad.studentid 
-                                            and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-                                            and pad.att_code is not null -- This filters out any attendance codes that have been changed to the default present code
-                                            ~[if#aift_allAttendanceD.prefschool.aift_allAttendance=]
-                                        	and pad.presence_status_cd = 'Absent'
-                                            [/if#aift_allAttendanceD]
-                                    ) as dailycount,
-                                [/if#aift_AttType1]
-                                ~[if#aift_AttType0.prefschool.aift_AttType=0]
-                                    (
-                                        select count(*)
-                                        from pssis_attendance_meeting pam 
-                                        where s.id = pam.studentid 
-                                            and pam.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
-                                            and pam.att_code is not null -- This filters out any attendance codes that have been changed to the default present code
-                                            ~[if#aift_allAttendanceM.prefschool.aift_allAttendance=]
-                                        	and pam.presence_status_cd = 'Absent'
-                                            [/if#aift_allAttendanceM]
-                                            --~[if#aift_showCurrent.prefschool.aift_showCurrent=]
-                                        	--and pam.sectionid != ~(gpv.sectionid;sqlText)
-                                            --[/if#aift_showCurrent]
-                                    ) as meetingcount,
-                                [/if#aift_AttType0]
-                            cc.id as ccid,
-                            s.dcid as studentsdcid
-                            from students s
-                            inner join cc cc on s.id = cc.studentid and cc.sectionid = ~(gpv.sectionid;sqlText)
-                        ) attdata
-					~[if#aift_AttTypeBoth.prefschool.aift_AttType=]
-					    where (attdata.meetingcount > 0 or attdata.dailycount > 0);]
-					[/if#aift_AttTypeBoth]
-					~[if#aift_AttTypeDaily.prefschool.aift_AttType=1]
-					    where attdata.dailycount > 0;]
-					[/if#aift_AttTypeDaily]
-					~[if#aift_AttTypeMeeting.prefschool.aift_AttType=0]
-					    where attdata.meetingcount > 0;]
-					[/if#aift_AttTypeMeeting]
-					"~(attdata.ccid)":"~(attdata.studentsdcid)",
-				[/tlist_sql]"":""
-			};
-	
-			//Function step 2
-		//This function reads through the array created above and uses that information to add the buttons to the student rows
-		//Each button will link to an alert file which will open like other student alerts
-			$j.each(attendanceNotifications, function(ccid, studentsdcid) {
-				$j('tr[id=ccid_' + ccid + '] td:eq(3)').append('&nbsp;<a href="/teachers/alerts/attendance_information.html?frn=001'+ studentsdcid +'&att_date=~(gpv.att_date)" class="dialogM dockedDialog" title="Attendance Information for Teachers"><img src="/images/attendance-red-30x30.svg" alt="Show Attendance Info" width="25" height="25" style="vertical-align: bottom;"></a>');
-			});
-		
-			$j('#legend').after('<div><p style="color:#666666;font-size:x-small;">This page displays student attendance information using the <i>Attendance Information for Teachers</i> plugin customization.</p></div>');
-		
-		});
-	</script>
-
-	[/if#meetingaift]
-	<!-- End Teacher Attendance Info Notification -->
 [/if#aift_enabledSchool]
