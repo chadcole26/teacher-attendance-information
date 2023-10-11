@@ -10,8 +10,7 @@
 		//The variable created in this function will be an array containing the student and course info needed to add the button to the correct rows on the attendance screen
 		//The query pulls a list of all students in the class who have meeting or daily attendance records for the current day
 		$j(document).ready(function(){
-			//Function step 1
-			var sectionID = $j('#pss-integrations-attendance').attr('section-identifier');
+			// Function step 1 get the attendance data
 			var attendanceInformation = [
 				~[tlist_sql;
 					select
@@ -26,9 +25,12 @@
 										where s.id = pam.studentid 
 											and pam.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
 											and pam.att_code is not null -- This filters out any attendance codes that have been changed to the default present code
-											~[if#aift_allAttendanceM.prefschool.aift_allAttendance=2]
+											~[if#aift_allAttendanceM.prefschool.aift_allAttendance=1]
 												and pam.presence_status_cd = 'Absent'
 											[/if#aift_allAttendanceM]
+											--~[if#aift_showCurrent.prefschool.aift_showCurrent=1]
+												--and pam.sectionid != ~(gpv.sectionid;sqlText)
+											--[/if#aift_showCurrent]
 									) as meetingcount,
 									(
 										select count(*)
@@ -36,7 +38,7 @@
 										where s.id = pad.studentid 
 											and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
 											and pad.att_code is not null -- This filters out any attendance codes that have been changed to the default present code
-											~[if#aift_allAttendanceD.prefschool.aift_allAttendance=2]
+											~[if#aift_allAttendanceD.prefschool.aift_allAttendance=1]
 												and pad.presence_status_cd = 'Absent'
 											[/if#aift_allAttendanceD]
 									) as dailycount,
@@ -48,7 +50,7 @@
 										where s.id = pad.studentid 
 											and pad.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
 											and pad.att_code is not null -- This filters out any attendance codes that have been changed to the default present code
-											~[if#aift_allAttendanceD.prefschool.aift_allAttendance=2]
+											~[if#aift_allAttendanceD.prefschool.aift_allAttendance=1]
 												and pad.presence_status_cd = 'Absent'
 											[/if#aift_allAttendanceD]
 									) as dailycount,
@@ -60,9 +62,12 @@
 										where s.id = pam.studentid 
 											and pam.att_date = to_date('~(gpv.att_date;sqlText)','~[datetext:mmddyyyy]')
 											and pam.att_code is not null -- This filters out any attendance codes that have been changed to the default present code
-											~[if#aift_allAttendanceM.prefschool.aift_allAttendance=2]
+											~[if#aift_allAttendanceM.prefschool.aift_allAttendance=1]
 												and pam.presence_status_cd = 'Absent'
 											[/if#aift_allAttendanceM]
+											--~[if#aift_showCurrent.prefschool.aift_showCurrent=]
+												--and pam.sectionid != ~(gpv.sectionid;sqlText)
+											--[/if#aift_showCurrent]
 									) as meetingcount,
 								[/if#aift_AttType0]
 								cc.id as ccid,
@@ -70,7 +75,7 @@
 							from students s
 							inner join cc cc on s.id = cc.studentid and cc.sectionid = ~(gpv.sectionid;sqlText)
 						) attdata
-					~[if#aift_AttTypeBoth.prefschool.aift_AttType=2]
+					~[if#aift_AttTypeBoth.prefschool.aift_AttType=1]
 						where (attdata.meetingcount > 0 or attdata.dailycount > 0);]
 					[/if#aift_AttTypeBoth]
 					~[if#aift_AttTypeDaily.prefschool.aift_AttType=2]
@@ -83,15 +88,15 @@
 				[/tlist_sql]
 			];
 		
-			//Funtion Step 2 - Add a column to the table for the red attendance chair
+			// Function Step 2 - Add a column to the table for the red attendance chair
 			angularCustomizations.addCustomization('pss-integrations-attendance', {
 					dataModelName: 'student',
-					template: '',
+					template: ' ',
 					title: '',
 					type: 'tableColumn'
 			});  	
 		
-			//Function step 3 - Add the chairs
+			// Function step 3 - Add the chairs
 			attendanceInformation.forEach(dcid => {
 				angularCustomizations.addCustomization('pss-integrations-attendance', {
 					injectionType: 'append',
