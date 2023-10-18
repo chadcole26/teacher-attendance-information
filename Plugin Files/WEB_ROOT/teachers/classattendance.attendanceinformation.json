@@ -1,0 +1,36 @@
+[
+	~[tlist_sql; 
+        SELECT
+            cc.id AS ccid,
+            s.dcid AS studentsdcid,
+            COUNT(CASE WHEN att.att_mode_code = 'ATT_ModeMeeting' AND LOWER(attc.Presence_Status_CD) = 'absent' THEN 1 ELSE NULL END) AS meetingabsent,
+            COUNT(CASE WHEN att.att_mode_code = 'ATT_ModeMeeting' AND LOWER(attc.Presence_Status_CD) = 'present' THEN 1 ELSE NULL END) AS meetingpresent,
+            COUNT(CASE WHEN att.att_mode_code = 'ATT_ModeDaily' AND LOWER(attc.Presence_Status_CD) = 'absent' THEN 1 ELSE NULL END) AS dailyabsent,
+            COUNT(CASE WHEN att.att_mode_code = 'ATT_ModeDaily' AND LOWER(attc.Presence_Status_CD) = 'present' THEN 1 ELSE NULL END) AS dailypresent
+        FROM sections s1
+        JOIN sections s2
+            ON TO_CHAR(ABS(s2.id)) = TO_CHAR('~(gpv.sections)')
+        JOIN sectionteacher st
+            ON TO_CHAR(ABS(st.sectionid)) = TO_CHAR('~(gpv.sections)')
+            AND st.teacherid = ~[x:userid]
+        JOIN cc cc
+            ON s1.id = cc.sectionid
+        JOIN students s
+            ON s.id = cc.studentid
+        JOIN attendance att
+            ON s.id = att.studentid
+            AND TRUNC(att.Att_Date) = TRUNC(TO_DATE('~(gpv.attdate)'))
+        JOIN attendance_code attc
+            ON att.attendance_codeid = attc.id
+            AND s.schoolid = attc.schoolid
+        WHERE s1.teacher = st.teacherid
+            AND s1.expression = s2.expression
+            AND FLOOR (ABS(s1.termid)/100) = ~(curyearid)
+            AND s1.schoolid = ~(curschoolid)
+            AND attc.att_code IS NOT NULL
+        GROUP BY cc.id, s.dcid
+        ORDER BY cc.id, s.dcid
+	]
+		{"ccid":"~(ccid)","studentsdcid":"~(studentsdcid)","meetingabsent":"~(meetingabsent)","meetingpresent":"~(meetingpresent)","dailyabsent":"~(dailyabsent)","dailypresent":"~(dailypresent)"},
+	[/tlist_sql]
+{}]
