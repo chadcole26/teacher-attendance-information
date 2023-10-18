@@ -1,34 +1,62 @@
-~[if#aift_enabledSchoolScript.prefschool.aift_enabledSchool=]
+~[if#aift_enabledSchool.prefschool.aift_enabledSchool=]
 
-<script type="text/javascript">
-
-    $j(document).ready(function(){
-        
-        const dmo = ~[prefschool:aift_AttType];
-        
-        $j('.aiftAlert').each(function(){
-            
-            var ccid    = $j(this).attr('ccid');
-            var attm    = $j(this).attr('attmeetingcount');
-            var attd    = $j(this).attr('attdailycount');
-            
-            if ( dmo == 1 && (attm > 0 || attd > 0) ) {
-                $j('tr[id=' + ccid + '] td:eq(3)').append($j(this).html());
-            } else {
-                if ( dmo == 2 && attd > 0 ) {
-                    $j('tr[id=' + ccid + '] td:eq(3)').append($j(this).html());
-                } else {
-                    if ( dmo == 3 && attm > 0) {
-                        $j('tr[id=' + ccid + '] td:eq(3)').append($j(this).html());
-                    };
-                };
-            };
-            
-            $j(this).remove();
-            
-        });
-    });
-
+<script>
+	$j(function() {
+	    
+	    if ( $j('input[name=MultiSection]').val() ) {
+            var sections = $j('input[name=MultiSection]').val();
+            sections = "'"+sections.replaceAll(";","','")+"'";
+	    } else {
+            var sections = '~(gpv.sectionid)';
+	    }
+	    
+		const dmo = ~[prefschool:aift_AttType]; // 1 = Daily and Meeting, 2 = Daily Only, 3 = Meeting Only 
+		const aco = ~[prefschool:aift_allAttendance]; // 1 = Absences only, 2 = All attendance codes other than Present
+		
+		$j.ajax({
+			type: 'POST', 
+			dataType: 'json',
+			cache: 'false',
+			url: '/admin/teacherschedules/classattendance.attendanceinformation.json', 
+			data: {
+				"sections" : "" + sections + "",
+				"attdate" : "~(gpv.att_date)"
+			},
+			// Process the ajax query results
+			success: function(chairData) {
+			    chairData.pop();
+			    for ( i=0; i<chairData.length; i++ ){
+			        var chairLink = "<a href='/admin/alerts/attendance_information.html?frn=001" + chairData[i].studentsdcid + "&att_date=~(gpv.att_date)' class='dialogM dockedDialog' title='Attendance Information for Teachers'><img src='/images/attendance-red-30x30.svg' alt='Show Attendance Info' width='25' height='25' style='vertical-align: bottom;'></a>";
+					if ( aco == 1 ) {
+						if ( dmo == 1 && ( chairData[i].meetingabsent > 0 || chairData[i].dailyabsent > 0 ) ) {
+							$j('tr[id=ccid_' + chairData[i].ccid + '] td:eq(3)').append( chairLink );
+						}
+						if ( dmo == 2 && chairData[i].dailyabsent > 0 ) {
+							$j('tr[id=ccid_' + chairData[i].ccid + '] td:eq(3)').append( chairLink );
+						}
+						if ( dmo == 3 && chairData[i].meetingabsent  > 0 ) {
+							$j('tr[id=ccid_' + chairData[i].ccid + '] td:eq(3)').append( chairLink );
+						}
+					}
+					if ( aco == 2 ) {
+						if ( dmo == 1 && ( chairData[i].meetingabsent > 0 || chairData[i].dailyabsent > 0 || chairData[i].meetingpresent > 0 || chairData[i].dailypresent > 0 ) ) {
+							$j('tr[id=ccid_' + chairData[i].ccid + '] td:eq(3)').append( chairLink );
+						}
+						if ( dmo == 2 && ( chairData[i].dailyabsent > 0 || chairData[i].dailypresent > 0 ) ) {
+							$j('tr[id=ccid_' + chairData[i].ccid + '] td:eq(3)').append( chairLink );
+						}
+						if ( dmo == 3 && ( chairData[i].meetingabsent > 0 || chairData[i].meetingpresent > 0 ) ) {
+							$j('tr[id=ccid_' + chairData[i].ccid + '] td:eq(3)').append( chairLink );
+						}
+					}
+			    }
+			},
+			// Notify of failure
+			error: function() {
+				console.log('There was an error.');  
+			}
+		});
+	});
 </script>
 
-[/if#aift_enabledSchoolScript]
+[/if#aift_enabledSchool]

@@ -1,7 +1,14 @@
 ~[if#aift_enabledSchool.prefschool.aift_enabledSchool=]
 
-<script type="text/javascript">
+<script>
 	$j(function() {
+	    
+	    if ( $j('input[name=MultiSection]').val() ) {
+            var sections = $j('input[name=MultiSection]').val();
+            sections = "'"+sections.replaceAll(";","','")+"'";
+	    } else {
+            var sections = '~(gpv.sectionid)';
+	    }
 	    
 		const dmo = ~[prefschool:aift_AttType]; // 1 = Daily and Meeting, 2 = Daily Only, 3 = Meeting Only 
 		const aco = ~[prefschool:aift_allAttendance]; // 1 = Absences only, 2 = All attendance codes other than Present
@@ -12,7 +19,7 @@
 			cache: 'false',
 			url: '/teachers/classattendance.attendanceinformation.json', 
 			data: {
-				"sections" : "~(gpv.sectionid)",
+				"sections" : "" + sections + "",
 				"attdate" : "~(gpv.att_date)"
 			},
 			// Process the ajax query results
