@@ -1,3 +1,15 @@
-<!-- 
-	REMOVING SCHOOLOGY INTEGRATON FOR THE TIME BEING, IT'S CAUSING PERFORMANCE ISSUES
--->
+~[if#aift_enabledSchool.prefschool.aift_enabledSchool=]
+	<!-- Teacher Attendance Info Notification Created by Chad Cole -->
+	<!-- This script adds an attendance information button, on the teacher's meeting attendance screen, for any student who has any attendance codes entered for the day -->
+
+	<!-- Test to see if the user clicked into the single meeting mode (chair) to take attendance -->
+	~[if#meetingaift.~[gpv:pagetype]=meeting]
+
+		<!--The user is taking meeting attendance -->
+		<script language="javascript">
+			console.log('pagetype: ' + ~(gpv.pagetype));
+		</script>
+
+	[/if#meetingaift]
+	<!-- End Teacher Attendance Info Notification -->
+[/if#aift_enabledSchool]
