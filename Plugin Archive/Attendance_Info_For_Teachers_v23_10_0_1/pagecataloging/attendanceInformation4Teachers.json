@@ -1,0 +1,15 @@
+{ 
+	"pages": [ 
+		{
+		  "htmlID": "navAttendanceInfoForTeachersSchoolSetup",
+		  "title": "Attendance Info For Teachers",
+		  "version": "23.7.0.0",
+		  "contextType": "main",
+		  "sortOrder": 550,
+		  "pageURL": "/admin/schoolsetup/Attendance_Information.html",
+		  "pageDescription": "Settings for the Attendance Information for Teachers plugin from the Powersource Community Exchange",
+		  "districtLevelContext": 1,
+		  "parentHTMLID": "navSchoolManagementAttendance"
+		}
+	]
+}

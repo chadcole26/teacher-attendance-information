@@ -1,62 +1,69 @@
 ~[if#aift_enabledSchool.prefschool.aift_enabledSchool=]
+	<!-- Teacher Attendance Info Notification Created by Chad Cole -->
+	<!-- This script adds an attendance information button, on the teacher's meeting attendance screen, for any student who has any attendance codes entered for the day -->
 
-<script>
-	$j(function() {
-	    
-	    if ( $j('input[name=MultiSection]').val() ) {
-            var sections = $j('input[name=MultiSection]').val();
-            sections = "'"+sections.replaceAll(";","','")+"'";
-	    } else {
-            var sections = '~(gpv.sectionid)';
-	    }
-	    
-		const dmo = ~[prefschool:aift_AttType]; // 1 = Daily and Meeting, 2 = Daily Only, 3 = Meeting Only 
-		const aco = ~[prefschool:aift_allAttendance]; // 1 = Absences only, 2 = All attendance codes other than Present
-		
-		$j.ajax({
-			type: 'POST', 
-			dataType: 'json',
-			cache: 'false',
-			url: '/teachers/classattendance.attendanceinformation.json', 
-			data: {
-				"sections" : "" + sections + "",
-				"attdate" : "~(gpv.att_date)"
-			},
-			// Process the ajax query results
-			success: function(chairData) {
-			    chairData.pop();
-			    for ( i=0; i<chairData.length; i++ ){
-			        var chairLink = "<a href='/teachers/alerts/attendance_information.html?frn=001" + chairData[i].studentsdcid + "&att_date=~(gpv.att_date)' class='dialogM dockedDialog' title='Attendance Information for Teachers'><img src='/images/attendance-red-30x30.svg' alt='Show Attendance Info' width='25' height='25' style='vertical-align: bottom;'></a>";
-					if ( aco == 1 ) {
-						if ( dmo == 1 && ( chairData[i].meetingabsent > 0 || chairData[i].dailyabsent > 0 ) ) {
-							$j('tr[id=ccid_' + chairData[i].ccid + '] td:eq(3)').append( chairLink );
-						}
-						if ( dmo == 2 && chairData[i].dailyabsent > 0 ) {
-							$j('tr[id=ccid_' + chairData[i].ccid + '] td:eq(3)').append( chairLink );
-						}
-						if ( dmo == 3 && chairData[i].meetingabsent  > 0 ) {
-							$j('tr[id=ccid_' + chairData[i].ccid + '] td:eq(3)').append( chairLink );
-						}
-					}
-					if ( aco == 2 ) {
-						if ( dmo == 1 && ( chairData[i].meetingabsent > 0 || chairData[i].dailyabsent > 0 || chairData[i].meetingpresent > 0 || chairData[i].dailypresent > 0 ) ) {
-							$j('tr[id=ccid_' + chairData[i].ccid + '] td:eq(3)').append( chairLink );
-						}
-						if ( dmo == 2 && ( chairData[i].dailyabsent > 0 || chairData[i].dailypresent > 0 ) ) {
-							$j('tr[id=ccid_' + chairData[i].ccid + '] td:eq(3)').append( chairLink );
-						}
-						if ( dmo == 3 && ( chairData[i].meetingabsent > 0 || chairData[i].meetingpresent > 0 ) ) {
-							$j('tr[id=ccid_' + chairData[i].ccid + '] td:eq(3)').append( chairLink );
-						}
-					}
-			    }
-			},
-			// Notify of failure
-			error: function() {
-				console.log('There was an error.');  
-			}
-		});
-	});
-</script>
+	<!-- Check to make sure the user is taking meeting attendance -->
+	~[if#meetingaift.~[gpv:pagetype]=meeting]
+	    <input type="hidden" value="~[prefschool:aift_AttType]" id="aift_dmo">
+	    <input type="hidden" value="~[prefschool:aift_allAttendance]" id="aift_aco">
+		<!--The user is taking meeting attendance -->
+		<script language="javascript">
+    		const dmo = $j('#aift_dmo').val(); // 1 = Daily and Meeting, 2 = Daily Only, 3 = Meeting Only 
+    		const aco = $j('#aift_aco').val(); // 1 = Absences only, 2 = All attendance codes other than Present
+    		console.log('dmo: ' + dmo + ' aco: ' + aco);
+		    const studentData =[];
+		    ~[tlist_sql;		    
+                SELECT
+                    cc.id AS ccid,
+                    s.dcid AS studentsdcid,
+                    COUNT(CASE WHEN att.att_mode_code = 'ATT_ModeMeeting' AND LOWER(attc.Presence_Status_CD) = 'absent' THEN 1 ELSE NULL END) AS meetingabsent,
+                    COUNT(CASE WHEN att.att_mode_code = 'ATT_ModeMeeting' AND LOWER(attc.Presence_Status_CD) = 'present' THEN 1 ELSE NULL END) AS meetingpresent,
+                    COUNT(CASE WHEN att.att_mode_code = 'ATT_ModeDaily' AND LOWER(attc.Presence_Status_CD) = 'absent' THEN 1 ELSE NULL END) AS dailyabsent,
+                    COUNT(CASE WHEN att.att_mode_code = 'ATT_ModeDaily' AND LOWER(attc.Presence_Status_CD) = 'present' THEN 1 ELSE NULL END) AS dailypresent
+                FROM sections s1
+                JOIN cc cc
+                    ON s1.id = cc.sectionid
+                JOIN students s
+                    ON s.id = cc.studentid
+                JOIN attendance att
+                    ON s.id = att.studentid
+                JOIN attendance_code attc
+                    ON att.attendance_codeid = attc.id
+                    AND s.schoolid = attc.schoolid
+                WHERE s1.id = ~(gpv.sectionid;sqlText)
+                    AND attc.att_code IS NOT NULL
+                    AND att.att_date = TO_DATE('~(gpv.att_date;sqlText)','~[datetext:mm/dd/yyyy]')
+                GROUP BY cc.id, s.dcid
+                ORDER BY cc.id, s.dcid]
+                studentData.push({"ccid":"~(ccid)","studentsdcid":"~(studentsdcid)","meetingabsent":"~(meetingabsent)","meetingpresent":"~(meetingpresent)","dailyabsent":"~(dailyabsent)","dailypresent":"~(dailypresent)"})
+            [/tlist_sql]
+            console.log(JSON.stringify(studentData));
+            
+            studentData.forEach(student => {
+                var dcid = student.studentsdcid;
+                console.log('dcid: ' + dcid);
+                
+				if ( aco == 1 ) {
+				    if (
+				        ( dmo == 1 && ( student.meetingabsent > 0 || student.dailyabsent > 0 ) ) ||
+				        ( dmo == 2 && student.dailyabsent > 0 ) ||
+				        ( dmo == 3 && student.meetingabsent  > 0 )
+				    ) {
+				        console.log('Add a red chair to ' + student.studentsdcid);
+				    }
+				}
+				if ( aco == 2 ) {
+				    if (
+				        ( dmo == 1 && ( student.meetingabsent > 0 || student.dailyabsent > 0 || student.meetingpresent > 0 || student.dailypresent > 0 ) ) ||
+				        ( dmo == 2 && ( student.dailyabsent > 0 || student.dailypresent > 0 ) ||
+				        ( dmo == 3 && ( student.meetingabsent > 0 || student.meetingpresent > 0 )
+				    ) {
+				        console.log('Add a red chair to ' + student.studentsdcid);
+				    }
+				}
 
+            });
+		</script>
+	[/if#meetingaift]
+	<!-- End Teacher Attendance Info Notification -->
 [/if#aift_enabledSchool]

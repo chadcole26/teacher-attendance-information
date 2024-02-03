@@ -1,0 +1,6 @@
+<!-- This script adds a link to set school level settings to the School setup page -->
+<script type="text/javascript">
+	$j(document).ready( function() {
+		$j('a[href="/admin/attendance/conversions/home.html"]').closest('tr').after('<tr><td><a href="/admin/schoolsetup/Attendance_Information.html">Attendance Info for Teachers (Custom Plugin)</a></td><td>School related setup options for the Attendance Information for Teachers plugin.</td></tr>');
+	});
+</script>

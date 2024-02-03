@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <title>Attendance Info For Teachers</title>
+<!-- required scripts -->
+ ~[wc:commonscripts] 
+<!-- Required style sheets: screen.css, and print.css --> 
+ <link href="/images/css/screen.css" rel="stylesheet" media="screen">
+ <link href="/images/css/print.css" rel="stylesheet" media="print">
+
+	<script type="text/javascript">
+	
+		$j(document).ready(function(){
+			schoolEnabled();
+		});
+	
+		function schoolEnabled () {
+			if($j('#aift_enabledSchool').prop('checked') == false ) {
+				$j('.hideShow').show();
+			} else {
+				$j('.hideShow').hide();
+			}
+		}
+		
+	</script>
+	
+	<style>
+	    .spaced20 {
+	        float: left;
+	        width: 20px;
+	    }
+	    
+	    .spaced40 {
+	        float: left;
+	        width: 40px;
+	    }
+	</style>
+	
+</head> 
+<body> 
+ ~[wc:admin_header_css] 
+ <!-- breadcrumb start --><a href="/admin/home.html" target="_top">~[text:psx.html.admin_schoolsetup.balancealertedit.start_page]</a> &gt; <a href="/admin/schoolsetup/home.html" target="_top">~[text:psx.html.admin_schoolsetup.balancealertedit.school_setup]</a> &gt; Attendance Info for Teachers<!-- breadcrumb end --> 
+<!-- start of main menu and content --> 
+ ~[wc:admin_navigation_css] 
+<!-- Start of Page --> 
+ <h1>Attendance Info For Teachers</h1> 
+<!-- start of content area -->
+~[if.gpv.action=success]
+<div class="feedback-confirm">Successfully recorded changes.</div>
+[/if]
+
+		<form action="/admin/schoolsetup/Attendance_Information.html?action=success" method="POST">
+			<div class="box-round"> 
+				<h2>Attendance Information for Teachers - School Managed Settings</h2>
+				<table class="linkDescList" id="aift_schoolOptions">
+					<tbody>
+						<tr class="headerrow">
+							<td class="bold">Alert Settings</td>
+						</tr>
+						<tr>
+							<td>
+							    <input type="checkbox" value="1" name="[prefschool]aift_enabledSchool" id="aift_enabledSchool"  onchange="schoolEnabled()" />&nbsp;
+							    Disable <em>Attendance Info for Teachers</em> for ~(schoolname)&nbsp;&nbsp; <a href="#aift_enabledSchoolMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15"></a>
+						    </td>
+						</tr>
+						<tr class="hideShow">
+							<td>
+							    <strong>Show the red chair for...</strong>&nbsp;&nbsp; <a href="#aift_AttTypeMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15"></a><br>
+							    <span class="spaced20">&nbsp;</span>Daily and Meeting Options:<br>
+							    <span class="spaced40">&nbsp;</span><input type="radio" value="1" name="[prefschool]aift_AttType" />Daily and/or Meeting Attendance (Default Setting)<br>
+							    <span class="spaced40">&nbsp;</span><input type="radio" value="2" name="[prefschool]aift_AttType" />Daily Attendance Only<br>
+							    <span class="spaced40">&nbsp;</span><input type="radio" value="3" name="[prefschool]aift_AttType" />Meeting Attendance Only<br>
+							    <span class="spaced20">&nbsp;</span>Attendance Code Options:<br>
+							    <span class="spaced40">&nbsp;</span><input type="radio" value="1" name="[prefschool]aift_allAttendance" />Absences Only (Default Setting)<br>
+							    <span class="spaced40">&nbsp;</span><input type="radio" value="2" name="[prefschool]aift_allAttendance" />All Attendance Codes<br>
+							</td>
+						</tr>
+						<!--
+						<tr class="hideShow">
+							<td><input type="checkbox" value="1" name="[prefschool]aift_allAttendance" id="aift_allAttendance" />&nbsp;
+							    Show the red chair for all attendance codes, not just absences&nbsp;&nbsp; <a href="#aift_allAttendanceMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15">
+						    </td>
+						</tr>
+						-->
+						<tr class="headerrow hideShow">
+							<td class="bold">Dialog Information Settings</td>
+						</tr>
+						<tr class="hideShow">
+							<td>
+							    <input type="checkbox" value="1" name="[prefschool]aift_remoteEnrollments" id="aift_remoteEnrollments" />&nbsp;
+						        Show only classes scheduled at ~(schoolname) in the student's schedule&nbsp;&nbsp; <a href="#aift_remoteEnrollmentsMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15">
+						    </td>
+						</tr>
+						<tr class="hideShow">
+							<td>
+							    <input type="checkbox" value="1" name="[prefschool]aift_adaExclude" id="aift_adaExclude" />&nbsp;
+							    Include courses/sections that have been set to be excluded from ADA calculations&nbsp;&nbsp; <a href="#aift_adaExcludeMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15">
+							</td>
+						</tr>
+						<tr class="hideShow">
+							<td>
+							    <input type="checkbox" value="1" name="[prefschool]aift_schoolAbbreviations" id="aift_schoolAbbreviations" />&nbsp;
+							    Only show school abbreviations if the class does not meet at the current school&nbsp;&nbsp; <a href="#aift_schoolAbbreviationsMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15">
+						    </td>
+						</tr>
+						<!--
+						<tr class="hideShow">
+							<td><input type="checkbox" value="1" name="[prefschool]aift_showCurrent" id="aift_showCurrent" /></td>
+							<td>Show the red chair if the only attendance submitted is for the viewing teachers period/section  <a href="#aift_showCurrentMI" class="dialogDivC" title="More Information"><img src="/images/dist/teacher_tools/images/icons/info-blue-30x30.svg" height="15" width="15"></td>
+						</tr>
+						-->
+					</tbody>
+				</table>
+
+				<div class="button-row">
+					<input type="hidden" name="ac" value="prim">~[submitbutton]
+				</div>
+
+			</div>
+		</form>
+		
+<!-- end of content area --> 
+ ~[wc:admin_footer_css] 
+ 
+
+<!-- Information about disabling the features -->
+<div id="aift_enabledSchoolMI" class="hide" style="">
+    <div style="max-width:640px;">
+    	<h2>Attendance Information for Teachers - School Managed Settings</h2>
+    	<table class="linkDescList">
+    		<tr>
+    			<td class="bold">Setting:</td>
+    			<td>Disable <em>Attendance Info for Teachers</em> for ~(schoolname)</td>
+    		</tr>
+    		<tr>
+    			<td colspan="2">Default setting is for the features of the <em>Attendance Information for Teachers</em> plugin to be enabled for all schools. Checking this box will  turn the features off for only ~(schoolname).</td>
+    		</tr>
+    	</table>
+    </div>
+</div>
+
+<!-- Information about school abbreviations -->
+<div id="aift_schoolAbbreviationsMI" class="hide" style="">
+    <div style="max-width:640px;">
+    	<h2>Attendance Information for Teachers - School Managed Settings</h2>
+    	<table class="linkDescList">
+    		<tr>
+    			<td class="bold">Setting:</td>
+    			<td>Only show school abbreviations if the class does not meet at the current school</td>
+    		</tr>
+    		<tr>
+    			<td colspan="2">Default setting shows the abbreviation of the school where each class in the student's schedule is taught. Checking this box will remove the abbreviation for classes taught at the teacher's current school and the abbreviation will appear only for classes taught at other schools. </td>
+    		</tr>
+    	</table>
+    </div>
+</div>
+
+<!-- Information about remote enrollments --> 
+<div id="aift_remoteEnrollmentsMI" class="hide" style="">
+    <div style="max-width:640px;">
+    	<h2>Attendance Information for Teachers - School Managed Settings</h2>
+    	<table class="linkDescList">
+    		<tr>
+    			<td class="bold">Setting:</td>
+    			<td>Show only classes scheduled at ~(schoolname) in the student's schedule</td>
+    		</tr>
+    		<tr>
+    			<td colspan="2">Default setting shows the student's entire schedule, including classes taken at other schools (dual/remote enrollments) on the same PowerSchool server. Checking this box will remove those classes from the student's schedule listing.</td>
+    		</tr>
+    	</table>
+    </div>
+</div>
+
+<!-- Information about classes excluded from ADA calculations -->  
+<div id="aift_adaExcludeMI" class="hide" style="">
+    <div style="max-width:640px;">
+    	<h2>Attendance Information for Teachers - School Managed Settings</h2>
+    	<table class="linkDescList">
+    		<tr>
+    			<td class="bold">Setting:</td>
+    			<td>Include courses/sections that have been set to be excluded from ADA calculations </td>
+    		</tr>
+    		<tr>
+    			<td colspan="2">Default setting shows only classes that count toward ADA (average daily attendance) calculations. Checking this box will show all current course enrollments for the student, regardless of whether attendance taken for the class counts towards ADA calculations.</td>
+    		</tr>
+    	</table>
+    </div>
+</div>
+
+<!-- Informaiton about selecting specific Att type -->  
+<div id="aift_AttTypeMI" class="hide" style="">
+    <div style="max-width:640px;">
+    	<h2>Attendance Information for Teachers - School Managed Settings</h2>
+    	<table class="linkDescList">
+    		<tr>
+    			<td class="bold">Setting:</td>
+    			<td>Show the red chair for...</td>
+    		</tr>
+    		<tr>
+    			<td colspan="2">
+    			    Daily and Meeting Options:<br>
+    			    Default setting, <em>Daily and/or Meeting Attendance</em>, will display the red chair when the student has at least one attendance record, meeting or daily, with a presence status of <em>Absent</em>. Selecting <em>Daily Attendance Only</em> will only show the chair if there is a daily attendance code for the student and meeting attendance will be ignored. Selecting <em>Meeting Attendance Only</em> will only show the chair if there is a meeting attendance code for the student and daily attendance will be ignored.</td>
+    		</tr>
+    		<tr>
+    			<td colspan="2">
+    			    Attendance Code Options:<br>
+    			    Default setting, <em>Absences Only</em>, will not display the red chair when all attendance codes on record, for the day and for the student, have a presence status of <em>Present</em> (e.g. tardies, excused codes such as field trips or athletics, or any code indicating the student may or may not have been in class but was still counted as present.) Selecting <em>All Attendance Codes</em> will display the red chair when the student has any attendance records, regardless of presence status, that are not the default <em>Present</em> code.</td>
+    		</tr>
+    	</table>
+    </div>
+</div>
+ 
+</body> 
+</html>

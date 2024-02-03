@@ -2,14 +2,41 @@
 	<!-- Teacher Attendance Info Notification Created by Chad Cole -->
 	<!-- This script adds an attendance information button, on the teacher's meeting attendance screen, for any student who has any attendance codes entered for the day -->
 
-	<!-- Test to see if the user clicked into the single meeting mode (chair) to take attendance -->
+	<!-- Check to make sure the user is taking meeting attendance -->
 	~[if#meetingaift.~[gpv:pagetype]=meeting]
-
 		<!--The user is taking meeting attendance -->
 		<script language="javascript">
-			console.log('pagetype: ' + ~(gpv.pagetype));
+			var studentData =[];
+			~[tlist_sql;			
+				SELECT
+					cc.id AS ccid,
+					s.dcid AS studentsdcid,
+					COUNT(CASE WHEN att.att_mode_code = 'ATT_ModeMeeting' AND LOWER(attc.Presence_Status_CD) = 'absent' THEN 1 ELSE NULL END) AS meetingabsent,
+					COUNT(CASE WHEN att.att_mode_code = 'ATT_ModeMeeting' AND LOWER(attc.Presence_Status_CD) = 'present' THEN 1 ELSE NULL END) AS meetingpresent,
+					COUNT(CASE WHEN att.att_mode_code = 'ATT_ModeDaily' AND LOWER(attc.Presence_Status_CD) = 'absent' THEN 1 ELSE NULL END) AS dailyabsent,
+					COUNT(CASE WHEN att.att_mode_code = 'ATT_ModeDaily' AND LOWER(attc.Presence_Status_CD) = 'present' THEN 1 ELSE NULL END) AS dailypresent
+				FROM sections s1
+				JOIN cc cc
+					ON s1.id = cc.sectionid
+				JOIN students s
+					ON s.id = cc.studentid
+				JOIN attendance att
+					ON s.id = att.studentid
+				JOIN attendance_code attc
+					ON att.attendance_codeid = attc.id
+					AND s.schoolid = attc.schoolid
+				WHERE s1.id = ~(gpv.sectionid;sqlText)
+					AND attc.att_code IS NOT NULL
+					AND att.att_date = TO_DATE('~(gpv.att_date;sqlText)','~[datetext:mm/dd/yyyy]')
+				GROUP BY cc.id, s.dcid
+				ORDER BY cc.id, s.dcid]
+				studentData.push({"ccid":"~(ccid)","studentsdcid":"~(studentsdcid)","meetingabsent":"~(meetingabsent)","meetingpresent":"~(meetingpresent)","dailyabsent":"~(dailyabsent)","dailypresent":"~(dailypresent)"})
+			[/tlist_sql]
+			console.log(JSON.stringify(studentData));
+			
+			studentData 
+			
 		</script>
-
 	[/if#meetingaift]
 	<!-- End Teacher Attendance Info Notification -->
 [/if#aift_enabledSchool]
