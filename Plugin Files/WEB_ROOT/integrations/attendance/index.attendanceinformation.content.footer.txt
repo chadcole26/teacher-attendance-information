@@ -1,4 +1,5 @@
-~[if#aift_enabledSchool.prefschool.aift_enabledSchool=]
+~[if#aift_enabledSchool.prefschool.aift_enabledSchool=999999]
+	<!-- This is currently disabled by the IF statement above -->
 	<!-- Teacher Attendance Info Notification Created by Chad Cole -->
 	<!-- This script adds an attendance information button, on the teacher's meeting attendance screen, for any student who has any attendance codes entered for the day -->
 
